@@ -1,0 +1,110 @@
+/* eslint-disable @next/next/no-img-element */
+import React, { memo } from 'react';
+import { clsx } from 'clsx';
+import { getGenreIcon } from '../GenreIcons';
+import { getSportsTeamLogoCandidates, SPORTS_TEAM_LOGO_GENRES, type SportsTeamLogoInput } from '@/lib/sports-team-logos';
+
+interface SportsTeamLogoOverlayProps {
+    performance: SportsTeamLogoInput;
+    className?: string;
+    logoClassName?: string;
+    vsClassName?: string;
+    showBackgroundIcon?: boolean;
+    backgroundIconSize?: number;
+    backgroundIconClassName?: string;
+    logoFrameClassName?: string;
+    showTeamNames?: boolean;
+    teamNameClassName?: string;
+}
+
+function SportsTeamLogoOverlay({
+    performance,
+    className,
+    logoClassName,
+    vsClassName,
+    showBackgroundIcon = false,
+    backgroundIconSize = 120,
+    backgroundIconClassName,
+    logoFrameClassName,
+    showTeamNames = false,
+    teamNameClassName,
+}: SportsTeamLogoOverlayProps) {
+    const homeCandidates = getSportsTeamLogoCandidates(performance, 'home');
+    const awayCandidates = getSportsTeamLogoCandidates(performance, 'away');
+    const homeLogo = homeCandidates[0] || '';
+    const awayLogo = awayCandidates[0] || '';
+    const backgroundIcon = showBackgroundIcon ? getGenreIcon(performance.genre || '', backgroundIconSize) : null;
+
+    if (
+        !performance.genre ||
+        !SPORTS_TEAM_LOGO_GENRES.has(performance.genre) ||
+        !performance.homeTeam ||
+        !performance.awayTeam ||
+        !homeLogo ||
+        !awayLogo
+    ) {
+        return null;
+    }
+
+    const renderLogo = (side: 'home' | 'away') => {
+        const team = side === 'home' ? performance.homeTeam : performance.awayTeam;
+        const candidates = side === 'home' ? homeCandidates : awayCandidates;
+        const logo = candidates[0];
+        const image = (
+            <img
+                src={logo}
+                alt={team}
+                className={logoFrameClassName ? 'w-full h-full object-contain' : logoClassName}
+                width={96}
+                height={96}
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+                onError={(event) => {
+                    const current = event.currentTarget;
+                    const nextIndex = Number(current.dataset.logoCandidateIndex || '0') + 1;
+                    const nextLogo = candidates[nextIndex];
+                    if (nextLogo) {
+                        current.dataset.logoCandidateIndex = String(nextIndex);
+                        current.src = nextLogo;
+                        return;
+                    }
+                    // A stale payload must never leave a broken-image icon over the card.
+                    current.style.display = 'none';
+                }}
+            />
+        );
+
+        if (!logoFrameClassName && !showTeamNames) {
+            return image;
+        }
+
+        return (
+            <div className="flex flex-col items-center gap-1 min-w-0">
+                {logoFrameClassName ? (
+                    <div className={logoFrameClassName}>{image}</div>
+                ) : image}
+                {showTeamNames && (
+                    <span className={teamNameClassName}>{team}</span>
+                )}
+            </div>
+        );
+    };
+
+    return (
+        <div className={className}>
+            {showBackgroundIcon && (
+                <div className={backgroundIconClassName}>
+                    {React.isValidElement(backgroundIcon)
+                        ? React.cloneElement(backgroundIcon as React.ReactElement<React.SVGProps<SVGSVGElement>>, { strokeWidth: 1 })
+                        : null}
+                </div>
+            )}
+            {renderLogo('home')}
+            <div className={clsx(vsClassName)}>VS</div>
+            {renderLogo('away')}
+        </div>
+    );
+}
+
+export default memo(SportsTeamLogoOverlay);

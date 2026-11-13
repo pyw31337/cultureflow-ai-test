@@ -1,0 +1,552 @@
+import { format, isValid, parse } from 'date-fns';
+import { ko } from 'date-fns/locale';
+
+export const normalizeImageUrl = (url?: string | null) => {
+    if (!url) return '';
+    const trimmed = url.trim();
+    if (!trimmed) return '';
+    if (trimmed.startsWith('//')) return `https:${trimmed}`;
+    if (trimmed.startsWith('http://www.kopis.or.kr/')) return trimmed.replace('http://www.kopis.or.kr/', 'https://www.kopis.or.kr/');
+    if (trimmed.startsWith('http://kopis.or.kr/')) return trimmed.replace('http://kopis.or.kr/', 'https://kopis.or.kr/');
+    if (trimmed.startsWith('http://www.culture.go.kr/')) return trimmed.replace('http://www.culture.go.kr/', 'https://www.culture.go.kr/');
+    if (trimmed.startsWith('http://culture.go.kr/')) return trimmed.replace('http://culture.go.kr/', 'https://culture.go.kr/');
+    if (trimmed.startsWith('http://ticketimage.interpark.com/')) return trimmed.replace('http://ticketimage.interpark.com/', 'https://ticketimage.interpark.com/');
+    return trimmed;
+};
+
+const encodeLocalImagePath = (path: string) => encodeURI(path);
+
+export const getOptimizedUrl = (url: string, width: number = 400, quality: number = 70) => {
+    if (!url) return '';
+    const normalizedUrl = normalizeImageUrl(url);
+    if (!normalizedUrl) return '';
+    if (normalizedUrl.startsWith('data:')) return normalizedUrl;
+    if (normalizedUrl.includes('wsrv.nl/?url=')) return normalizedUrl;
+    // TimeTicket blocks wsrv.nl (403 Forbidden), skipping optimization as requested
+    if (normalizedUrl.includes('timeticket.co.kr')) return normalizedUrl;
+    // Seoul Culture might be unstable with proxy, skipping to be safe
+    if (normalizedUrl.includes('culture.seoul.go.kr')) return normalizedUrl;
+    // VisitKorea CDN already serves resized assets reliably; proxying it can delay or replace images.
+    if (
+        normalizedUrl.includes('cdn.visitkorea.or.kr') ||
+        normalizedUrl.includes('kfescdn.visitkorea.or.kr') ||
+        normalizedUrl.includes('tong.visitkorea.or.kr')
+    ) return normalizedUrl;
+    // Skip external optimization for local images (relative paths)
+    if (normalizedUrl.startsWith('/')) {
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+        const sourcePath = basePath && normalizedUrl.startsWith(basePath)
+            ? normalizedUrl.slice(basePath.length)
+            : normalizedUrl;
+        if (width <= 420 && sourcePath.startsWith('/images/posters/')) {
+            const thumbPath = sourcePath
+                .replace('/images/posters/', '/images/thumbs/w320/posters/')
+                .replace(/\.(?:jpe?g|png|webp)$/i, '.webp');
+            return encodeLocalImagePath(`${basePath}${thumbPath}`);
+        }
+        // If basePath is set and url doesn't start with it (and isn't just a slash if basePath is empty?), prepend it.
+        // Also avoid double-slash if basePath ends with / (it shouldn't based on config)
+        if (basePath && !normalizedUrl.startsWith(basePath)) {
+            return encodeLocalImagePath(`${basePath}${normalizedUrl}`);
+        }
+        return encodeLocalImagePath(normalizedUrl);
+    }
+
+    try {
+        // use wsrv.nl for image optimization
+        const encodedUrl = encodeURIComponent(normalizedUrl);
+        return `https://wsrv.nl/?url=${encodedUrl}&w=${width}&q=${quality}&output=webp`;
+    } catch {
+        return normalizedUrl;
+    }
+};
+
+/**
+ * Returns a priority list of image proxy URLs for a remote image, ending with the raw direct URL.
+ * Enables client-side Image component to fallback seamlessly across vendors if wsrv.nl is down.
+ */
+export const getAlternativeOptimizedUrls = (url: string, width: number = 400, quality: number = 70): string[] => {
+    if (!url) return [];
+    const normalized = normalizeImageUrl(url);
+    if (!normalized) return [];
+    
+    // For data URI, local paths, or pre-optimized ones, no proxy chain is needed.
+    if (normalized.startsWith('data:') || normalized.startsWith('/') || normalized.includes('wsrv.nl/?url=')) {
+        return [normalized];
+    }
+    
+    // TimeTicket / Seoul Culture bypass proxies
+    if (normalized.includes('timeticket.co.kr') || normalized.includes('culture.seoul.go.kr')) {
+        return [normalized];
+    }
+    
+    const out: string[] = [];
+    
+    // 1. wsrv.nl Webp (Primary)
+    try {
+        const encoded = encodeURIComponent(normalized);
+        out.push(`https://wsrv.nl/?url=${encoded}&w=${width}&q=${quality}&output=webp`);
+    } catch {}
+    
+    // 2. images.weserv.nl Webp (Secondary fallback hostname)
+    try {
+        const encoded = encodeURIComponent(normalized);
+        out.push(`https://images.weserv.nl/?url=${encoded}&w=${width}&q=${quality}&output=webp`);
+    } catch {}
+    
+    // 3. Statically.io Webp (Tertiary)
+    try {
+        if (normalized.startsWith('https://')) {
+            const cleanUrl = normalized.slice(8);
+            out.push(`https://statically.io/img/${cleanUrl}?w=${width}&q=${quality}`);
+        } else if (normalized.startsWith('http://')) {
+            const cleanUrl = normalized.slice(7);
+            out.push(`https://statically.io/img/${cleanUrl}?w=${width}&q=${quality}`);
+        }
+    } catch {}
+    
+    // 4. Original Direct URL (Last resort fallback)
+    out.push(normalized);
+    
+    return out;
+};
+
+// Calculate distance between two points
+export function getDistanceFromLatLonInKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in km
+    return d;
+}
+
+function deg2rad(deg: number) {
+    return deg * (Math.PI / 180);
+}
+
+// Helper to extract first price from a price string like "VIP석 154,000원 R석 132,000원..."
+// Returns { label: 'VIP석', price: '154,000' } or { label: null, price: '30,000' }
+export function extractFirstPrice(priceStr: string): { label: string | null; price: string } | null {
+    const normalized = priceStr?.trim();
+    if (!normalized) return null;
+
+    const compact = normalized.replace(/\s+/g, '');
+    const hasWonPrice = /\d[\d,]*\s*원/.test(normalized);
+    const hasKoreanUnitPrice = /\d+\s*만(?:\s*\d+\s*천)?\s*원|\d+\s*천\s*원/.test(normalized);
+    const isExplicitlyFree = /^(무료|0|0원|입장무료|관람무료|무료입장)$/.test(compact);
+
+    // Treat "무료" as a price only when it is the actual price, not an exemption note.
+    if (isExplicitlyFree || (compact.includes('무료') && !hasWonPrice && !hasKoreanUnitPrice)) {
+        return { label: null, price: '무료' };
+    }
+
+    const seatLabel = '([가-힣A-Z]+(?:석|권)?|[A-Z])';
+    const labeledKoreanUnitMatch = normalized.match(new RegExp(`${seatLabel}\\s*(?:(\\d+)\\s*만)?\\s*(?:(\\d+)\\s*천)?\\s*원`));
+    if (labeledKoreanUnitMatch && (labeledKoreanUnitMatch[2] || labeledKoreanUnitMatch[3])) {
+        const amount =
+            (Number.parseInt(labeledKoreanUnitMatch[2] || '0', 10) * 10000) +
+            (Number.parseInt(labeledKoreanUnitMatch[3] || '0', 10) * 1000);
+        if (amount > 0) {
+            return { label: labeledKoreanUnitMatch[1], price: amount.toLocaleString('ko-KR') };
+        }
+    }
+
+    // Try to match pattern: "XX석 NUMBER원" or "전석 NUMBER원"
+    const match = normalized.match(new RegExp(`${seatLabel}\\s*([\\d,]+)\\s*원`));
+    if (match) {
+        return { label: match[1], price: match[2] };
+    }
+
+    // Some sources omit "원" after a clearly labeled ticket price, e.g. "전석 20,000".
+    const labeledNumberMatch = normalized.match(new RegExp(`${seatLabel}\\s*([\\d]{1,3}(?:,[\\d]{3})+|[\\d]{4,})\\b`));
+    if (labeledNumberMatch) {
+        return { label: labeledNumberMatch[1], price: Number.parseInt(labeledNumberMatch[2].replace(/,/g, ''), 10).toLocaleString('ko-KR') };
+    }
+
+    const wonMatch = normalized.match(/([\d,]+)\s*원/);
+    if (wonMatch) {
+        return { label: null, price: wonMatch[1] };
+    }
+
+    const koreanUnitMatch = compact.match(/(?:(\d+)만)?(?:(\d+)천)?원/);
+    if (koreanUnitMatch && (koreanUnitMatch[1] || koreanUnitMatch[2])) {
+        const amount =
+            (Number.parseInt(koreanUnitMatch[1] || '0', 10) * 10000) +
+            (Number.parseInt(koreanUnitMatch[2] || '0', 10) * 1000);
+        if (amount > 0) {
+            return { label: null, price: amount.toLocaleString('ko-KR') };
+        }
+    }
+
+    // Fallback for normalized numeric strings such as "30000".
+    const numMatch = compact.match(/^[\d,]+$/);
+    if (numMatch) {
+        return { label: null, price: numMatch[0] };
+    }
+
+    return null;
+}
+
+// Clean up title by removing leading bracketed text e.g. "[키즈][서대문] Title" -> "Title"
+export function cleanTitle(title: string): string {
+    if (!title) return '';
+
+    let cleaned = title;
+
+    // 1. Remove noise prefixes in brackets [] at the start
+    // Matches patterns like [티켓오픈], [단독], [성남], [앵콜], [얼리버드]...
+    cleaned = cleaned.replace(/^(\[[^\]]*\]\s*)+/, '');
+
+    // 2. Remove noise patterns in parentheses () at the start
+    cleaned = cleaned.replace(/^(\([^)]*\)\s*)+/, '');
+
+    // 3. Remove known noise suffixes or internal tags
+    // e.g. "Title [서울]" or "Title (공연)"
+    cleaned = cleaned.replace(/\s*\[(?:서울|경기|인천|강원|충북|충남|전북|전남|경북|경남|제주|부산|대구|광주|대전|울산|세종|서울공연)\]$/g, '');
+
+    // 4. Clean up any lingering multiple spaces
+    cleaned = cleaned.trim().replace(/\s+/g, ' ');
+
+    // If the entire title was just brackets (e.g. "[특가]"), return the original title instead of an empty string
+    return cleaned === '' ? title : cleaned;
+}
+
+// Extract city and district (e.g., "대전 동구") from raw address
+export function getDistrictFromAddress(address?: string): string | null {
+    if (!address) return null;
+    
+    // Pattern to catch: [City/Province] [Gu/Gun/Si]
+    // e.g., "대전광역시 동구 ...", "서울 중구 ...", "경기도 성남시 ..."
+    const parts = address.split(' ').filter(p => p.length > 0);
+    if (parts.length < 2) return null;
+    
+    const city = parts[0];
+    const gu = parts[1];
+    
+    // Normalize city names
+    let normalizedCity = city;
+    if (city.startsWith('서울')) normalizedCity = '서울';
+    else if (city.startsWith('인천')) normalizedCity = '인천';
+    else if (city.startsWith('부산')) normalizedCity = '부산';
+    else if (city.startsWith('대전')) normalizedCity = '대전';
+    else if (city.startsWith('대구')) normalizedCity = '대구';
+    else if (city.startsWith('광주')) normalizedCity = '광주';
+    else if (city.startsWith('울산')) normalizedCity = '울산';
+    else if (city.startsWith('경기')) normalizedCity = '경기';
+    else if (city.startsWith('강원')) normalizedCity = '강원';
+    else if (city.startsWith('충청북도') || city.startsWith('충북')) normalizedCity = '충북';
+    else if (city.startsWith('충청남도') || city.startsWith('충남')) normalizedCity = '충남';
+    else if (city.startsWith('전라북도') || city.startsWith('전북')) normalizedCity = '전북';
+    else if (city.startsWith('전라남도') || city.startsWith('전남')) normalizedCity = '전남';
+    else if (city.startsWith('경상북도') || city.startsWith('경북')) normalizedCity = '경북';
+    else if (city.startsWith('경상남도') || city.startsWith('경남')) normalizedCity = '경남';
+    else if (city.startsWith('제주')) normalizedCity = '제주';
+    else if (city.startsWith('세종')) normalizedCity = '세종';
+
+    // Return e.g., "대전 동구" or "경기 성남시"
+    return `${normalizedCity} ${gu}`;
+}
+
+export function getLowResUrl(url: string): string | null {
+    const normalizedUrl = normalizeImageUrl(url);
+    if (!normalizedUrl) return null;
+    if (normalizedUrl.startsWith('/')) return null; // Local images handled by Next.js
+
+    // Mom-Mom Specific
+    if (normalizedUrl.includes('image.mom-mom.net')) {
+        try {
+            // Extract base64 part
+            const matches = normalizedUrl.match(/image\.mom-mom\.net\/([^?#]+)/);
+            if (matches && matches[1]) {
+                // Determine if we need to decode first (some might be raw, but usually base64)
+                // Mom-Mom uses straightforward base64 encoded JSON
+                const decodedStr = typeof atob === 'function' ? atob(matches[1]) : Buffer.from(matches[1], 'base64').toString();
+                const decoded = JSON.parse(decodedStr);
+
+                if (decoded.edits && decoded.edits.resize) {
+                    decoded.edits.resize.width = 40; // Tiny width
+                    // Ensure withoutEnlargement is true if present
+                } else {
+                    decoded.edits = { resize: { width: 40, fit: 'cover' } };
+                }
+
+                const encodedStr = typeof btoa === 'function' ? btoa(JSON.stringify(decoded)) : Buffer.from(JSON.stringify(decoded)).toString('base64');
+                return `https://image.mom-mom.net/${encodedStr}`;
+            }
+        } catch { return null; }
+    }
+
+    // Skip blocked or specific domains for wsrv
+    if (normalizedUrl.includes('timeticket.co.kr') || normalizedUrl.includes('culture.seoul.go.kr')) return null;
+
+    // Use wsrv.nl for low-res blur
+    const encodedUrl = encodeURIComponent(normalizedUrl);
+    // w=20: Tiny width
+    // blur=5: Apply blur on server side
+    // q=20: Low quality
+    return `https://wsrv.nl/?url=${encodedUrl}&w=20&blur=5&q=20&output=webp`;
+}
+
+// Unified Date Formatter: YYYY.MM.DD (E) HH:mm or YYYY.MM.DD (E) for ranges
+export function formatUnifiedDate(dateStr: string): string {
+    if (!dateStr) return '';
+    try {
+        let cleanStr = dateStr;
+        // 1. Remove tags like [얼리버드], [유효기간:~xxxx.xx.xx]
+        cleanStr = cleanStr.replace(/\[(?:얼리버드|유효기간[:\s～~]*[^\\]]*|[^\]]*)\]/g, '');
+        // 2. Remove orphan brackets
+        cleanStr = cleanStr.replace(/[\[\]]/g, '');
+        // 3. Normalize dashes to dots (but keep time-like colons)
+        cleanStr = cleanStr.replace(/-/g, '.').replace(/\.+$/, '').trim();
+
+        // 4. Handle ranges
+        if (cleanStr.includes('~')) {
+            const parts = cleanStr.split('~').map(s => s.trim()).filter(Boolean);
+            if (parts.length > 1) {
+                const formattedParts = parts.map(p => formatSingleDateInternal(p));
+
+                if (formattedParts[0] === formattedParts[1]) {
+                    return formattedParts[0];
+                }
+
+                const dateMatch0 = formattedParts[0].match(/^(\d{4}\.\d{2}\.\d{2} \([가-힣]\))(?: (\d{2}:\d{2}))?$/);
+                const dateMatch1 = formattedParts[1].match(/^(\d{4}\.\d{2}\.\d{2} \([가-힣]\))(?: (\d{2}:\d{2}))?$/);
+
+                if (dateMatch0 && dateMatch1 && dateMatch0[1] === dateMatch1[1]) {
+                    const baseDate = dateMatch0[1];
+                    const time0 = dateMatch0[2];
+                    const time1 = dateMatch1[2];
+
+                    if (time0 && time1) {
+                        return `${baseDate} ${time0} ~ ${time1}`;
+                    } else if (time0) {
+                        return `${baseDate} ${time0}`;
+                    } else if (time1) {
+                        return `${baseDate} ${time1}`;
+                    } else {
+                        return baseDate;
+                    }
+                }
+
+                return formattedParts.join(' ~ ');
+            } else if (parts.length === 1 && cleanStr.startsWith('~')) {
+                return `~ ${formatSingleDateInternal(parts[0])}`;
+            }
+        }
+
+        return formatSingleDateInternal(cleanStr);
+    } catch {
+        return dateStr;
+    }
+}
+
+/**
+ * Internal helper to format a single date string (used for ranges too)
+ */
+function formatSingleDateInternal(str: string): string {
+    if (!str) return '';
+
+    // Normalize dots to dashes for parsing
+    let parseStr = str.replace(/\./g, '-').trim();
+
+    // Handle "YYYYMMDD" (8 digits)
+    if (/^\d{8}$/.test(parseStr)) {
+        const y = parseStr.substring(0, 4);
+        const m = parseStr.substring(4, 6);
+        const d = parseStr.substring(6, 8);
+        parseStr = `${y}-${m}-${d}`;
+    }
+
+    let parsedDate = new Date(parseStr);
+
+    if (!isValid(parsedDate)) {
+        // Try strict parsing
+        try {
+            parsedDate = parse(parseStr, 'yyyy-MM-dd HH:mm:ss', new Date());
+            if (!isValid(parsedDate)) {
+                parsedDate = parse(parseStr, 'yyyy-MM-dd HH:mm', new Date());
+            }
+            if (!isValid(parsedDate)) {
+                parsedDate = parse(parseStr, 'yyyy-MM-dd', new Date());
+            }
+        } catch {
+            return str;
+        }
+    }
+
+    if (isValid(parsedDate)) {
+        const hasTime = str.includes(':');
+        if (hasTime) {
+            return format(parsedDate, 'yyyy.MM.dd (E) HH:mm', { locale: ko });
+        } else {
+            // No time in original string -> omit HH:mm
+            return format(parsedDate, 'yyyy.MM.dd (E)', { locale: ko });
+        }
+    }
+
+    return str;
+}
+
+/**
+ * Convert desktop URLs to mobile-optimized versions for specific platforms
+ * - Naver Search: search.naver.com -> m.search.naver.com
+ * - Yes24 Ticket: ticket.yes24.com -> m.ticket.yes24.com
+ */
+export function toMobileUrl(url: string | undefined): string {
+    if (!url) return '';
+    
+    try {
+        // Only convert if it's an absolute URL
+        if (!url.startsWith('http')) return url;
+
+        const urlObj = new URL(url);
+        
+        // Naver Search
+        if (urlObj.hostname === 'search.naver.com') {
+            urlObj.hostname = 'm.search.naver.com';
+            return urlObj.toString();
+        }
+        
+        // Yes24 Ticket
+        if (urlObj.hostname === 'ticket.yes24.com') {
+            urlObj.hostname = 'm.ticket.yes24.com';
+            return urlObj.toString();
+        }
+
+        // YouTube
+        if (urlObj.hostname === 'www.youtube.com' || urlObj.hostname === 'youtube.com') {
+            urlObj.hostname = 'm.youtube.com';
+            return urlObj.toString();
+        }
+
+        // Interpark, KOPIS, and others are already responsive or handle redirects
+        return url;
+    } catch {
+        return url || '';
+    }
+}
+
+// --- Punycode Decoder for Unicode / Korean Domains (RFC 3492) ---
+const BASE = 36;
+const TMIN = 1;
+const TMAX = 26;
+const SKEW = 38;
+const DAMP = 700;
+const INITIAL_BIAS = 72;
+const INITIAL_N = 128;
+const DELIMITER = '-';
+
+function adaptBias(delta: number, numPoints: number, firstTime: boolean): number {
+    let k = 0;
+    delta = firstTime ? Math.floor(delta / DAMP) : Math.floor(delta / 2);
+    delta += Math.floor(delta / numPoints);
+    for (; delta > Math.floor(((BASE - TMIN) * TMAX) / 2); k += BASE) {
+        delta = Math.floor(delta / (BASE - TMIN));
+    }
+    return k + Math.floor(((BASE + 1 - TMIN) * delta) / (delta + SKEW));
+}
+
+export function decodePunycode(input: string): string {
+    const output: number[] = [];
+    const inputLength = input.length;
+    let i = 0;
+    let n = INITIAL_N;
+    let bias = INITIAL_BIAS;
+
+    let basic = input.lastIndexOf(DELIMITER);
+    if (basic < 0) {
+        basic = 0;
+    }
+
+    for (let j = 0; j < basic; ++j) {
+        const code = input.charCodeAt(j);
+        if (code >= 0x80) {
+            throw new RangeError("Illegal input >= 0x80");
+        }
+        output.push(code);
+    }
+
+    let consume = basic > 0 ? basic + 1 : 0;
+    while (consume < inputLength) {
+        const oldi = i;
+        let w = 1;
+        for (let k = BASE; ; k += BASE) {
+            if (consume >= inputLength) {
+                throw new RangeError("Invalid input");
+            }
+            const code = input.charCodeAt(consume++);
+            let digit = 0;
+            if (code - 48 < 10) {
+                digit = code - 22;
+            } else if (code - 65 < 26) {
+                digit = code - 65;
+            } else if (code - 97 < 26) {
+                digit = code - 97;
+            } else {
+                throw new RangeError("Invalid input");
+            }
+
+            if (digit >= BASE || digit > Math.floor((0x7fffffff - i) / w)) {
+                throw new RangeError("Overflow");
+            }
+            i += digit * w;
+            const t = k <= bias ? TMIN : k >= bias + TMAX ? TMAX : k - bias;
+            if (digit < t) {
+                break;
+            }
+            w *= BASE - t;
+        }
+
+        const len = output.length + 1;
+        bias = adaptBias(i - oldi, len, oldi === 0);
+
+        if (Math.floor(i / len) > 0x7fffffff - n) {
+            throw new RangeError("Overflow");
+        }
+        n += Math.floor(i / len);
+        i %= len;
+
+        output.splice(i++, 0, n);
+    }
+
+    return String.fromCodePoint(...output);
+}
+
+export function decodePunycodeUrl(url?: string | null): string {
+    if (!url) return '';
+    try {
+        let protocol = '';
+        let rest = url;
+        const protoMatch = url.match(/^([a-zA-Z]+:\/\/)/);
+        if (protoMatch) {
+            protocol = protoMatch[1];
+            rest = url.slice(protocol.length);
+        }
+
+        const slashIdx = rest.indexOf('/');
+        let host = slashIdx >= 0 ? rest.slice(0, slashIdx) : rest;
+        const path = slashIdx >= 0 ? rest.slice(slashIdx) : '';
+
+        const hostParts = host.split('.');
+        const decodedParts = hostParts.map(part => {
+            const lower = part.toLowerCase();
+            if (lower.startsWith('xn--')) {
+                try {
+                    return decodePunycode(lower.slice(4));
+                } catch {
+                    return part;
+                }
+            }
+            return part;
+        });
+        
+        return `${protocol}${decodedParts.join('.')}${path}`;
+    } catch {
+        return url;
+    }
+}

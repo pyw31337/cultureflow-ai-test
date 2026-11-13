@@ -1,0 +1,956 @@
+# Issue Tracker & Known Errors
+
+이 파일은 GitHub Actions 자동화(CI/CD) 과정 중 발생한 에러 기록들을 AI와 공유하고 아카이빙하기 위해 만들어진 공간입니다.
+
+> [!NOTE]
+> 매일 정해진 스케줄러(cron)가 돌 때 스크레이퍼(Scraper)나 데이터 검증 스크립트에서 **에러**가 발생하면 봇 계정이 이곳 가장 아래에 실패 내역을 자동으로 기록하고 PUSH 합니다.
+> AI (예: Antigravity)는 수정 작업을 시작할 때 본 파일을 먼저 확인하고, 문제의 런(Run ID) 및 실패 항목을 통해 신속히 버그 수정을 개시하게 됩니다!
+
+---
+
+## Error Logs
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-03-06 12:29:37 UTC
+- **GitHub Run ID**: [22759876738](https://github.com/pyw31337/culture/actions/runs/22759876738)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-03-06 16:01:59 UTC
+- **GitHub Run ID**: [22767781299](https://github.com/pyw31337/culture/actions/runs/22767781299)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-03-09 16:25:31 UTC
+- **GitHub Run ID**: [22858911758](https://github.com/pyw31337/culture/actions/runs/22858911758)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-03-11 16:50:55 UTC
+- **GitHub Run ID**: [22958158450](https://github.com/pyw31337/culture/actions/runs/22958158450)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-03-12 13:09:24 UTC
+- **GitHub Run ID**: [22998086490](https://github.com/pyw31337/culture/actions/runs/22998086490)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-04-26 15:27:19 UTC
+- **GitHub Run ID**: [24959406381](https://github.com/pyw31337/culture/actions/runs/24959406381)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-04-27 16:25:02 UTC
+- **GitHub Run ID**: [25005191616](https://github.com/pyw31337/culture/actions/runs/25005191616)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-04-28 16:46:38 UTC
+- **GitHub Run ID**: [25064039499](https://github.com/pyw31337/culture/actions/runs/25064039499)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-04-29 16:34:47 UTC
+- **GitHub Run ID**: [25119469712](https://github.com/pyw31337/culture/actions/runs/25119469712)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-04-30 16:34:36 UTC
+- **GitHub Run ID**: [25175140928](https://github.com/pyw31337/culture/actions/runs/25175140928)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-01 15:33:22 UTC
+- **GitHub Run ID**: [25219208257](https://github.com/pyw31337/culture/actions/runs/25219208257)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-02 15:29:52 UTC
+- **GitHub Run ID**: [25254581295](https://github.com/pyw31337/culture/actions/runs/25254581295)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-03 15:25:38 UTC
+- **GitHub Run ID**: [25282337152](https://github.com/pyw31337/culture/actions/runs/25282337152)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-04 16:44:45 UTC
+- **GitHub Run ID**: [25329260674](https://github.com/pyw31337/culture/actions/runs/25329260674)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-05 16:44:04 UTC
+- **GitHub Run ID**: [25387092464](https://github.com/pyw31337/culture/actions/runs/25387092464)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-06 16:44:40 UTC
+- **GitHub Run ID**: [25446529967](https://github.com/pyw31337/culture/actions/runs/25446529967)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-07 16:44:06 UTC
+- **GitHub Run ID**: [25507520324](https://github.com/pyw31337/culture/actions/runs/25507520324)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-08 16:21:03 UTC
+- **GitHub Run ID**: [25563979460](https://github.com/pyw31337/culture/actions/runs/25563979460)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-09 15:28:56 UTC
+- **GitHub Run ID**: [25604036788](https://github.com/pyw31337/culture/actions/runs/25604036788)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-10 15:37:51 UTC
+- **GitHub Run ID**: [25631847825](https://github.com/pyw31337/culture/actions/runs/25631847825)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-11 17:12:48 UTC
+- **GitHub Run ID**: [25683338076](https://github.com/pyw31337/culture/actions/runs/25683338076)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-12 16:56:30 UTC
+- **GitHub Run ID**: [25747458169](https://github.com/pyw31337/culture/actions/runs/25747458169)
+- **Note**: A scraper or validation step failed during the daily data update. Please check the Action logs via the link above.
+- **Failed Scrapers**:
+  - interpark
+  - kbl
+  - handball
+  - festival
+  - kbo
+  - yes24-exclusive
+  - myrealtrip
+  - sssd
+  - museum
+  - mommom
+  - mommom-activities
+  - mommom-exhibitions
+  - mommom-products
+  - seoul-culture
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-16 10:49:56 UTC
+- **GitHub Run ID**: [25956870937](https://github.com/pyw31337/culture/actions/runs/25956870937)
+- **Note**: The 15:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - culture-portal
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-21 20:44:49 UTC
+- **GitHub Run ID**: [26249294113](https://github.com/pyw31337/culture/actions/runs/26249294113)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-22 20:51:05 UTC
+- **GitHub Run ID**: [26308946069](https://github.com/pyw31337/culture/actions/runs/26308946069)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-23 20:14:26 UTC
+- **GitHub Run ID**: [26341309545](https://github.com/pyw31337/culture/actions/runs/26341309545)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-24 20:19:47 UTC
+- **GitHub Run ID**: [26370517970](https://github.com/pyw31337/culture/actions/runs/26370517970)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-25 20:44:26 UTC
+- **GitHub Run ID**: [26417199093](https://github.com/pyw31337/culture/actions/runs/26417199093)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-26 21:11:28 UTC
+- **GitHub Run ID**: [26472628837](https://github.com/pyw31337/culture/actions/runs/26472628837)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-27 21:21:26 UTC
+- **GitHub Run ID**: [26536657149](https://github.com/pyw31337/culture/actions/runs/26536657149)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-28 21:11:53 UTC
+- **GitHub Run ID**: [26600409135](https://github.com/pyw31337/culture/actions/runs/26600409135)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-29 21:16:11 UTC
+- **GitHub Run ID**: [26660696417](https://github.com/pyw31337/culture/actions/runs/26660696417)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - kopis
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-30 20:10:38 UTC
+- **GitHub Run ID**: [26692762723](https://github.com/pyw31337/culture/actions/runs/26692762723)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - kopis
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-05-31 20:06:01 UTC
+- **GitHub Run ID**: [26722137735](https://github.com/pyw31337/culture/actions/runs/26722137735)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - kopis
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-01 22:21:39 UTC
+- **GitHub Run ID**: [26783617320](https://github.com/pyw31337/culture/actions/runs/26783617320)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - kopis
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-02 21:37:54 UTC
+- **GitHub Run ID**: [26847490149](https://github.com/pyw31337/culture/actions/runs/26847490149)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - kopis
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-03 22:02:54 UTC
+- **GitHub Run ID**: [26913759418](https://github.com/pyw31337/culture/actions/runs/26913759418)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - interpark
+  - kopis
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-05 20:23:20 UTC
+- **GitHub Run ID**: [27037161522](https://github.com/pyw31337/culture/actions/runs/27037161522)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-06 20:00:30 UTC
+- **GitHub Run ID**: [27071942882](https://github.com/pyw31337/culture/actions/runs/27071942882)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-07 20:03:18 UTC
+- **GitHub Run ID**: [27102738861](https://github.com/pyw31337/culture/actions/runs/27102738861)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - mochaclass
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-09 20:34:41 UTC
+- **GitHub Run ID**: [27232873901](https://github.com/pyw31337/culture/actions/runs/27232873901)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-10 20:58:21 UTC
+- **GitHub Run ID**: [27304709473](https://github.com/pyw31337/culture/actions/runs/27304709473)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-14 20:05:28 UTC
+- **GitHub Run ID**: [27509940246](https://github.com/pyw31337/culture/actions/runs/27509940246)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-16 21:20:42 UTC
+- **GitHub Run ID**: [27647671544](https://github.com/pyw31337/culture/actions/runs/27647671544)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-17 20:43:45 UTC
+- **GitHub Run ID**: [27717242276](https://github.com/pyw31337/culture/actions/runs/27717242276)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-28 20:09:06 UTC
+- **GitHub Run ID**: [28333643005](https://github.com/pyw31337/culture/actions/runs/28333643005)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-29 20:37:37 UTC
+- **GitHub Run ID**: [28399284877](https://github.com/pyw31337/culture/actions/runs/28399284877)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-06-30 20:37:13 UTC
+- **GitHub Run ID**: [28472415132](https://github.com/pyw31337/culture/actions/runs/28472415132)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-03 19:57:41 UTC
+- **GitHub Run ID**: [28680123470](https://github.com/pyw31337/culture/actions/runs/28680123470)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - umclass
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-04 19:53:16 UTC
+- **GitHub Run ID**: [28716990687](https://github.com/pyw31337/culture/actions/runs/28716990687)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-05 19:56:07 UTC
+- **GitHub Run ID**: [28752137417](https://github.com/pyw31337/culture/actions/runs/28752137417)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-06 07:26:27 UTC
+- **GitHub Run ID**: [28773462132](https://github.com/pyw31337/culture/actions/runs/28773462132)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-06 08:44:12 UTC
+- **GitHub Run ID**: [28777389677](https://github.com/pyw31337/culture/actions/runs/28777389677)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-06 09:15:59 UTC
+- **GitHub Run ID**: [28779293467](https://github.com/pyw31337/culture/actions/runs/28779293467)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - umclass
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-07 20:25:10 UTC
+- **GitHub Run ID**: [28894900658](https://github.com/pyw31337/culture/actions/runs/28894900658)
+- **Note**: The 03:00 KST fallback data update failed after the local midnight update was absent or stale.
+- **Failed Scrapers**:
+  - umclass
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-10 20:08:08 UTC
+- **GitHub Run ID**: [29118708042](https://github.com/pyw31337/culture/actions/runs/29118708042)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-07-19 19:47:16 UTC
+- **GitHub Run ID**: [29700140880](https://github.com/pyw31337/culture/actions/runs/29700140880)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-01 19:46:24 UTC
+- **GitHub Run ID**: [30714362594](https://github.com/pyw31337/culture/actions/runs/30714362594)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-02 19:48:17 UTC
+- **GitHub Run ID**: [30763007329](https://github.com/pyw31337/culture/actions/runs/30763007329)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-05 20:13:52 UTC
+- **GitHub Run ID**: [31040575589](https://github.com/pyw31337/culture/actions/runs/31040575589)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-07 19:35:19 UTC
+- **GitHub Run ID**: [31209714052](https://github.com/pyw31337/culture/actions/runs/31209714052)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-12 19:38:01 UTC
+- **GitHub Run ID**: [31630982855](https://github.com/pyw31337/culture/actions/runs/31630982855)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-15 19:07:51 UTC
+- **GitHub Run ID**: [31901509441](https://github.com/pyw31337/culture/actions/runs/31901509441)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-19 19:16:28 UTC
+- **GitHub Run ID**: [32288646456](https://github.com/pyw31337/culture/actions/runs/32288646456)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-20 19:19:11 UTC
+- **GitHub Run ID**: [32404951807](https://github.com/pyw31337/culture/actions/runs/32404951807)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-25 19:21:20 UTC
+- **GitHub Run ID**: [32885495960](https://github.com/pyw31337/culture/actions/runs/32885495960)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-08-29 02:11:02 UTC
+- **GitHub Run ID**: [33226753716](https://github.com/pyw31337/culture/actions/runs/33226753716)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-03 07:34:13 UTC
+- **GitHub Run ID**: [33726085808](https://github.com/pyw31337/culture/actions/runs/33726085808)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-03 21:18:52 UTC
+- **GitHub Run ID**: [33804149019](https://github.com/pyw31337/culture/actions/runs/33804149019)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-04 21:06:05 UTC
+- **GitHub Run ID**: [33916805050](https://github.com/pyw31337/culture/actions/runs/33916805050)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-05 20:44:33 UTC
+- **GitHub Run ID**: [33989187445](https://github.com/pyw31337/culture/actions/runs/33989187445)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-06 20:43:28 UTC
+- **GitHub Run ID**: [34057283646](https://github.com/pyw31337/culture/actions/runs/34057283646)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-07 21:53:00 UTC
+- **GitHub Run ID**: [34162789643](https://github.com/pyw31337/culture/actions/runs/34162789643)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-08 21:21:05 UTC
+- **GitHub Run ID**: [34277665482](https://github.com/pyw31337/culture/actions/runs/34277665482)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - festival
+  - umclass
+  - museum
+  - mommom
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-09 21:21:59 UTC
+- **GitHub Run ID**: [34402867297](https://github.com/pyw31337/culture/actions/runs/34402867297)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-10 21:13:51 UTC
+- **GitHub Run ID**: [34527679309](https://github.com/pyw31337/culture/actions/runs/34527679309)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-11 21:23:18 UTC
+- **GitHub Run ID**: [34645805409](https://github.com/pyw31337/culture/actions/runs/34645805409)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-12 20:57:27 UTC
+- **GitHub Run ID**: [34716891282](https://github.com/pyw31337/culture/actions/runs/34716891282)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-13 21:09:49 UTC
+- **GitHub Run ID**: [34781112192](https://github.com/pyw31337/culture/actions/runs/34781112192)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-14 22:16:55 UTC
+- **GitHub Run ID**: [34900071094](https://github.com/pyw31337/culture/actions/runs/34900071094)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-15 21:40:30 UTC
+- **GitHub Run ID**: [35023306582](https://github.com/pyw31337/culture/actions/runs/35023306582)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-16 21:40:28 UTC
+- **GitHub Run ID**: [35150390971](https://github.com/pyw31337/culture/actions/runs/35150390971)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-17 21:45:58 UTC
+- **GitHub Run ID**: [35274927585](https://github.com/pyw31337/culture/actions/runs/35274927585)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-18 21:19:01 UTC
+- **GitHub Run ID**: [35392712806](https://github.com/pyw31337/culture/actions/runs/35392712806)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-19 20:57:33 UTC
+- **GitHub Run ID**: [35467028193](https://github.com/pyw31337/culture/actions/runs/35467028193)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-20 21:11:39 UTC
+- **GitHub Run ID**: [35535938724](https://github.com/pyw31337/culture/actions/runs/35535938724)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-21 22:28:59 UTC
+- **GitHub Run ID**: [35659462233](https://github.com/pyw31337/culture/actions/runs/35659462233)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-22 21:41:38 UTC
+- **GitHub Run ID**: [35784310626](https://github.com/pyw31337/culture/actions/runs/35784310626)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-23 21:57:24 UTC
+- **GitHub Run ID**: [35921653215](https://github.com/pyw31337/culture/actions/runs/35921653215)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-24 21:54:54 UTC
+- **GitHub Run ID**: [36060808847](https://github.com/pyw31337/culture/actions/runs/36060808847)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-25 21:53:31 UTC
+- **GitHub Run ID**: [36190876316](https://github.com/pyw31337/culture/actions/runs/36190876316)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-26 21:30:25 UTC
+- **GitHub Run ID**: [36270963719](https://github.com/pyw31337/culture/actions/runs/36270963719)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-27 21:43:46 UTC
+- **GitHub Run ID**: [36350588111](https://github.com/pyw31337/culture/actions/runs/36350588111)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-28 23:39:47 UTC
+- **GitHub Run ID**: [36496042746](https://github.com/pyw31337/culture/actions/runs/36496042746)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-29 03:33:56 UTC
+- **GitHub Run ID**: [36515224893](https://github.com/pyw31337/culture/actions/runs/36515224893)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-29 22:43:26 UTC
+- **GitHub Run ID**: [36637243220](https://github.com/pyw31337/culture/actions/runs/36637243220)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-09-30 22:42:28 UTC
+- **GitHub Run ID**: [36783185983](https://github.com/pyw31337/culture/actions/runs/36783185983)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-10-01 23:09:08 UTC
+- **GitHub Run ID**: [36935438747](https://github.com/pyw31337/culture/actions/runs/36935438747)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-10-02 22:40:32 UTC
+- **GitHub Run ID**: [37070048616](https://github.com/pyw31337/culture/actions/runs/37070048616)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-10-03 21:21:57 UTC
+- **GitHub Run ID**: [37152904873](https://github.com/pyw31337/culture/actions/runs/37152904873)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-10-04 21:37:53 UTC
+- **GitHub Run ID**: [37234636002](https://github.com/pyw31337/culture/actions/runs/37234636002)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-10-06 00:27:12 UTC
+- **GitHub Run ID**: [37391087218](https://github.com/pyw31337/culture/actions/runs/37391087218)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-10-06 23:12:03 UTC
+- **GitHub Run ID**: [37541117663](https://github.com/pyw31337/culture/actions/runs/37541117663)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+
+### 🚨 CI Action Runtime Failure
+- **Date**: 2026-10-07 23:35:36 UTC
+- **GitHub Run ID**: [37699165215](https://github.com/pyw31337/culture/actions/runs/37699165215)
+- **Note**: The 03:00 KST fallback data update failed during validation/processing. Retaining last successful data commit.
+- **Failed Scrapers**:
+  - interpark
+  - festival
+

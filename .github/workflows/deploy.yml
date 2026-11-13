@@ -1,0 +1,147 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Trigger on push to main (UI/Code changes)
+    paths-ignore:
+      - 'README.md'
+      - 'ERROR_TRACKER.md'
+      - 'logs/**'
+      - 'ops/**'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+  workflow_dispatch:
+  workflow_call: # Allow calling from other workflows (like daily-update)
+    inputs:
+      checkout-sha:
+        required: false
+        type: string
+      prebuilt-data:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      NEXT_PUBLIC_KAKAO_JS_KEY:
+        required: false
+
+concurrency:
+  group: deploy-to-github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.checkout-sha != '' && inputs.checkout-sha || github.sha }}
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Cache Next.js build
+        uses: actions/cache@v5
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
+
+      - name: Install dependencies
+        run: |
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+          npm ci --prefer-offline --no-audit --fund=false
+
+      - name: Validate Prebuilt Data Artifacts
+        env:
+          # GitHub-hosted runners get no data from the Interpark detail API, so
+          # report its coverage as a warning here; the local pipeline stays strict.
+          DETAIL_COMPLETENESS_WARN_SOURCES: interpark
+        run: |
+          npm run validate:content
+          npm run validate:locations
+          if [ -f public/data/poster-integrity-report.json ]; then
+            npm run validate:posters
+          else
+            echo "::warning::Poster integrity report is not available yet; the next data refresh will create it."
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            npm run validate:details
+            npm run validate:search
+            npm run validate:location-search
+            npm run validate:display
+            npm run audit:stability
+          fi
+
+      - name: Build Website
+        env:
+          NEXT_PUBLIC_BASE_PATH: /culture
+          NEXT_PUBLIC_KAKAO_JS_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_JS_KEY }}
+          NODE_OPTIONS: '--max-old-space-size=4096'
+          DETAIL_PAGE_EXPORT_LIMIT: '400'
+        run: |
+          npm run build:site:ci
+
+      - name: Verify Static Artifacts
+        run: |
+          test -f out/data/performances.json
+          test -f out/data/build-info.json
+          test -f out/images/og-image.jpg
+          test -f out/version.txt
+          test -f out/robots.txt
+          test -f out/sitemap.xml
+          test -f out/data/pages/manifest.json
+          if grep -q "dapi.kakao.com/v2/maps/sdk.js" out/index.html; then
+            echo "Kakao SDK should not be loaded from the static home page."
+            exit 1
+          fi
+          grep -R -q "dapi.kakao.com/v2/maps/sdk.js" out/_next/static/chunks
+
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./out
+
+  deploy:
+    runs-on: ubuntu-24.04
+    needs: build
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+  notify-failure:
+    if: failure()
+    runs-on: ubuntu-24.04
+    needs: [build, deploy]
+    permissions:
+      contents: read
+    steps:
+      - name: Deploy failure notice
+        run: |
+          echo "::error::Culture Flow Deploy failed. Check build/validate logs."
+          echo "Repo: ${{ github.repository }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

@@ -1,0 +1,1054 @@
+'use client';
+
+import { Suspense, useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { DiscoveryContextId, Performance } from '@/types';
+import { MapPin, Bell, Sun, Moon, Loader2 } from 'lucide-react';
+import { clsx } from 'clsx';
+import Image from 'next/image';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { GENRES, RADIUS_OPTIONS, DATE_FILTERS, PRICE_FILTERS, type DateFilterId, type PriceFilterId } from '@/lib/constants';
+import { useRouter } from 'next/navigation';
+import SearchParamsBridge from './SearchParamsBridge';
+
+// Empty URLSearchParams sentinel used for the initial (prerender) render.
+// See SearchParamsBridge for the full rationale - using useSearchParams() in
+// the render body of a client component forces this component's nearest
+// Suspense boundary to bail out to client-side rendering during static export.
+const EMPTY_SEARCH_PARAMS = new URLSearchParams();
+const HOME_SECTION_POOL_LIMIT = 720;
+
+// Atomic Components
+import AlarmPanel from './performance/list/AlarmPanel';
+import ResultsHeader from './performance/list/ResultsHeader';
+import LikedSections from './performance/list/LikedSections';
+import HeroSection from './performance/HeroSection';
+import PerformanceGrid from './performance/PerformanceGrid';
+import EmptyState from './performance/EmptyState';
+import RecommendedSection from './performance/RecommendedSection';
+import KeywordSection from './performance/KeywordSection';
+import PersonalizedSection from './performance/PersonalizedSection';
+import RainbowBackground from './ui/RainbowBackground';
+import ErrorBoundary from './ErrorBoundary';
+import BottomNav, { BottomMenuType } from './BottomNav';
+import BottomNavSheet from './BottomNavSheet';
+import { buildGenreCounts, getAvailableGenres, getGenreNavigationItems, isGenreAvailable, type GenreCounts } from '@/lib/genre-availability';
+import { formatCompactKoreanDateTime, type DataBuildInfo } from '@/lib/build-info';
+import { getRepresentativeVenueInfoForFavorite } from '@/lib/favorite-venues';
+import { getKeywordMatchedItems } from '@/lib/keyword-match';
+import { getRepresentativeVenueInfoForName } from '@/lib/location-display';
+import { getFeaturedPerformances } from '@/lib/performance-filter';
+import { buildCuratedDiscoveryItems, buildPersonalizedRecommendations, DISCOVERY_CONTEXTS } from '@/lib/discovery';
+import { warmPosterImages } from '@/lib/poster-preload';
+import { persistRegionSelection } from '@/lib/region-selection';
+
+// Custom Hooks
+import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { usePerformanceData } from '@/hooks/usePerformanceData';
+import { useSearchLogic } from '@/hooks/useSearchLogic';
+import { usePerformanceFilters } from '@/hooks/usePerformanceFilters';
+import { useHeroTemplates } from '@/hooks/useHeroTemplates';
+import { useUserActivity } from '@/hooks/useUserActivity';
+
+// Dynamic Modals for Code Splitting (Map & Calendar are now separate pages)
+const FavoriteVenuesModal = dynamic(() => import('./FavoriteVenuesModal'), { ssr: false });
+const loadSharedDetailModal = () => import('./SharedDetailModal');
+const SharedDetailModal = dynamic(loadSharedDetailModal, { ssr: false });
+const MapViewOverlay = dynamic(() => import('./MapView'), { ssr: false });
+const CalendarViewOverlay = dynamic(() => import('./CalendarView'), { ssr: false });
+
+interface PerformanceListProps {
+    initialPerformances: Performance[];
+    lastUpdated: string;
+    initialGenre?: string;
+    initialGenreCounts?: GenreCounts;
+    buildInfo?: DataBuildInfo | null;
+    isCategoryPage?: boolean;
+    categoryLabel?: string;
+    initialFilteredCount?: number;
+    categoryGenreFilter?: string | string[] | null;
+    performanceDataPath?: string;
+}
+
+export default function PerformanceList({
+    initialPerformances,
+    lastUpdated,
+    initialGenre = 'all',
+    initialGenreCounts,
+    buildInfo,
+    isCategoryPage = false,
+    categoryLabel,
+    initialFilteredCount,
+    categoryGenreFilter = null,
+    performanceDataPath
+}: PerformanceListProps) {
+    const router = useRouter();
+
+    // --- Custom Hooks (Modular Logic) ---
+    const {
+        likedIds, favoriteVenues, savedKeywords, setSavedKeywords, theme, toggleTheme,
+        toggleLike, toggleFavoriteVenue, addKeyword, removeKeyword, isStorageLoaded
+    } = useUserPreferences();
+    const { activity, trackGenreView, trackItemView, isActivityReady } = useUserActivity();
+
+    // --- View State ---
+    const [viewMode, setViewMode] = useState<string>('grid');
+    const [savedScrollPosition, setSavedScrollPosition] = useState(0);
+    const [layoutMode, setLayoutMode] = useState<'grid' | 'list'>('grid');
+
+    const [activeBottomMenu, setActiveBottomMenu] = useState<BottomMenuType>(null);
+    const [isHeroFilterExpanded, setIsHeroFilterExpanded] = useState(false);
+    const [activeSearchSource, setActiveSearchSource] = useState<'hero' | 'sticky'>('hero');
+    const [showFavoriteListModal, setShowFavoriteListModal] = useState(false);
+    const [isHeroVisible, setIsHeroVisible] = useState(true);
+    const [isAlarmOpen, setIsAlarmOpen] = useState(false);
+    const [keywordInput, setKeywordInput] = useState('');
+    const [sharedPerf, setSharedPerf] = useState<Performance | null>(null);
+    const [activeOverlay, setActiveOverlay] = useState<'map' | 'calendar' | null>(null);
+    const [overlaySearchParams, setOverlaySearchParams] = useState('');
+    const [shouldLoadVenueData, setShouldLoadVenueData] = useState(false);
+    const observerTarget = useRef<HTMLDivElement>(null);
+    const deepLinkHandled = useRef(false);
+    const modalReturnScrollY = useRef(0);
+
+    // searchParams is populated by <SearchParamsBridge> after mount. During
+    // static prerender it stays at EMPTY_SEARCH_PARAMS, which means the
+    // initial markup is fully prerendered (no BAILOUT_TO_CLIENT_SIDE_RENDERING)
+    // and the real URL params flow in once the client hydrates.
+    const [searchParams, setSearchParamsState] = useState<URLSearchParams>(() => EMPTY_SEARCH_PARAMS);
+    const initialQuery = searchParams.get('q') || '';
+    const urlMode = searchParams.get('mode') as 'keyword' | 'location' | null;
+    const urlLat = searchParams.get('lat') ? parseFloat(searchParams.get('lat')!) : null;
+    const urlLng = searchParams.get('lng') ? parseFloat(searchParams.get('lng')!) : null;
+    const urlVenue = searchParams.get('venue') || '';
+
+    const {
+        allPerformances,
+        venues,
+        isDataFullyLoaded,
+        isPerformancePageLoading,
+        hasMorePerformancePages,
+        loadNextPerformancePage,
+        loadAllPerformancePages,
+        performanceTotal,
+    } = usePerformanceData({
+        initialPerformances,
+        performanceLoadPolicy: performanceDataPath?.endsWith('/manifest.json') ? 'paged' : 'full',
+        performanceDataPath,
+        dataVersion: buildInfo?.version ?? (buildInfo?.generatedAt ? String(buildInfo.generatedAt) : null),
+        backgroundLoadPriority: savedKeywords.length > 0 || initialQuery.trim() ? 'immediate' : 'deferred',
+        loadVenues: shouldLoadVenueData,
+    });
+    const scopedPerformances = useMemo(() => {
+        if (!isCategoryPage || !categoryGenreFilter) return allPerformances;
+
+        const allowedGenres = new Set(Array.isArray(categoryGenreFilter) ? categoryGenreFilter : [categoryGenreFilter]);
+        return allPerformances.filter((performance) => allowedGenres.has(performance.genre));
+    }, [allPerformances, categoryGenreFilter, isCategoryPage]);
+
+    const {
+        searchText, setSearchText, searchMode, setSearchMode, searchLocation, setSearchLocation,
+        userLocation, setUserLocation, userAddress, radius, setRadius, isDropdownOpen, setIsDropdownOpen,
+        highlightedIndex, setHighlightedIndex, searchResults
+    } = useSearchLogic({ allPerformances: scopedPerformances, initialSearchText: initialQuery });
+    const [discoveryContextId, setDiscoveryContextId] = useState<DiscoveryContextId>('all');
+
+    const {
+        selectedGenre, setSelectedGenre, selectedRegion, setSelectedRegion,
+        selectedDistrict, setSelectedDistrict, selectedVenue, setSelectedVenue,
+        setShuffleSeed, districts, availableVenues, filteredPerformances, displayPerformances,
+        hasMore, loadMore,
+        selectedDateFilter, setSelectedDateFilter,
+        selectedPriceTier, setSelectedPriceTier,
+    } = usePerformanceFilters({
+        allPerformances: scopedPerformances, initialGenre, searchMode, searchText, searchLocation, userLocation, radius, venues, discoveryContextId
+    });
+
+    const { heroText, selectNextTemplate } = useHeroTemplates({ allPerformances: scopedPerformances, initialPerformances, searchMode });
+
+    useEffect(() => {
+        if (shouldLoadVenueData) return;
+        if (
+            selectedRegion !== 'all' ||
+            selectedVenue !== 'all' ||
+            isHeroFilterExpanded ||
+            activeBottomMenu ||
+            activeOverlay ||
+            viewMode === 'likes-perf'
+        ) {
+            setShouldLoadVenueData(true);
+        }
+    }, [activeBottomMenu, activeOverlay, isHeroFilterExpanded, selectedRegion, selectedVenue, shouldLoadVenueData, viewMode]);
+
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        const previousBodyOverflow = document.body.style.overflow;
+        const previousHtmlOverflow = document.documentElement.style.overflow;
+        if (activeOverlay) {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        }
+        return () => {
+            document.body.style.overflow = previousBodyOverflow;
+            document.documentElement.style.overflow = previousHtmlOverflow;
+        };
+    }, [activeOverlay]);
+
+    // --- Derived State ---
+    const activeLocation = searchLocation || userLocation;
+    const isSearchDataLoading = Boolean(searchText.trim()) && !isDataFullyLoaded;
+    const visibleSearchResults = searchMode === 'keyword' && isSearchDataLoading
+        ? []
+        : searchResults;
+    const genreCounts = useMemo(() => {
+        // Category pages intentionally keep a scoped item list, so the global
+        // genre navigation should continue to use the build-time aggregate counts.
+        if (isCategoryPage && initialGenreCounts && Object.keys(initialGenreCounts).length > 0) {
+            return initialGenreCounts;
+        }
+
+        if (isDataFullyLoaded) return buildGenreCounts(allPerformances);
+        if (initialGenreCounts && Object.keys(initialGenreCounts).length > 0) return initialGenreCounts;
+        return buildGenreCounts(allPerformances);
+    }, [allPerformances, initialGenreCounts, isCategoryPage, isDataFullyLoaded]);
+    const availableGenres = useMemo(() => getAvailableGenres(genreCounts), [genreCounts]);
+    const genreNavigationItems = useMemo(() => getGenreNavigationItems(genreCounts), [genreCounts]);
+    const totalItemCount = useMemo(() => {
+        if (buildInfo?.itemCount && !isCategoryPage) return buildInfo.itemCount;
+        if (performanceTotal) return performanceTotal;
+        return Object.values(genreCounts).reduce((sum, count) => sum + count, 0);
+    }, [buildInfo?.itemCount, genreCounts, isCategoryPage, performanceTotal]);
+    const availableGenreCount = useMemo(() => {
+        return availableGenres.filter((genre) => genre.id !== 'all').length;
+    }, [availableGenres]);
+    const displayFilteredCount = useMemo(() => {
+        if (isSearchDataLoading) return 0;
+        const isDefaultBrowse = !searchText && !searchLocation && selectedRegion === 'all' && selectedDistrict === 'all' && selectedVenue === 'all' && !selectedDateFilter && !selectedPriceTier && discoveryContextId === 'all';
+        if (isCategoryPage && initialFilteredCount && isDefaultBrowse) {
+            return initialFilteredCount;
+        }
+        if (!isCategoryPage && isDefaultBrowse && performanceTotal > filteredPerformances.length) {
+            return performanceTotal;
+        }
+        return filteredPerformances.length;
+    }, [
+        discoveryContextId,
+        filteredPerformances.length,
+        initialFilteredCount,
+        isCategoryPage,
+        isSearchDataLoading,
+        performanceTotal,
+        searchLocation,
+        searchText,
+        selectedDateFilter,
+        selectedDistrict,
+        selectedPriceTier,
+        selectedRegion,
+        selectedVenue,
+    ]);
+    const freshnessNote = useMemo(() => {
+        if (!buildInfo?.generatedAt) return '방금 정리한 추천 흐름이에요.';
+        return `${formatCompactKoreanDateTime(buildInfo.generatedAt)} 기준으로 다시 정리했어요.`;
+    }, [buildInfo?.generatedAt]);
+
+    // Initialize from URL params (e.g., from map '공연 더보기' button or venue links)
+    const lastUrlKey = useRef<string>('');
+    useEffect(() => {
+        if (urlMode === 'keyword' || urlMode === 'location') {
+            setSearchMode(urlMode);
+        }
+    }, [setSearchMode, urlMode]);
+
+    useEffect(() => {
+        const currentKey = `${urlMode}-${urlLat}-${urlLng}-${urlVenue}`;
+        if (lastUrlKey.current === currentKey) return;
+        
+        if (urlMode === 'location' && urlLat && urlLng && urlVenue) {
+            lastUrlKey.current = currentKey;
+            setSearchMode('location');
+            setSearchLocation({ lat: urlLat, lng: urlLng, name: urlVenue });
+            setSearchText(urlVenue);
+            if (searchParams.get('genre')) {
+                setSelectedGenre(searchParams.get('genre')!);
+            }
+        }
+    }, [urlMode, urlLat, urlLng, urlVenue, setSearchMode, setSearchLocation, setSearchText, setSelectedGenre, searchParams]);
+
+    const homeSectionCandidates = useMemo(() => {
+        if (scopedPerformances.length <= HOME_SECTION_POOL_LIMIT) return scopedPerformances;
+        return scopedPerformances.slice(0, HOME_SECTION_POOL_LIMIT);
+    }, [scopedPerformances]);
+
+    const keywordItems = useMemo(() => {
+        if (!savedKeywords.length || !scopedPerformances.length) return [];
+        return getKeywordMatchedItems(scopedPerformances, savedKeywords, 15);
+    }, [scopedPerformances, savedKeywords]);
+
+    const discoverySignals = useMemo(() => ({
+        likedIds,
+        favoriteVenues,
+        savedKeywords,
+        activity,
+        buildInfo,
+    }), [likedIds, favoriteVenues, savedKeywords, activity, buildInfo]);
+
+    const computedPersonalizedItems = useMemo(() => {
+        if (!homeSectionCandidates.length) return [];
+        return buildPersonalizedRecommendations(homeSectionCandidates, discoverySignals, 12);
+    }, [homeSectionCandidates, discoverySignals]);
+    const personalizedItems = (isStorageLoaded && isActivityReady && isDataFullyLoaded)
+        ? computedPersonalizedItems
+        : [];
+
+    useEffect(() => {
+        if (!searchText.trim() && savedKeywords.length === 0) return;
+        if (!hasMorePerformancePages || isPerformancePageLoading) return;
+        void loadAllPerformancePages();
+    }, [hasMorePerformancePages, isPerformancePageLoading, loadAllPerformancePages, savedKeywords.length, searchText]);
+
+    const recommendedItems = useMemo(() => {
+        const featured = getFeaturedPerformances(homeSectionCandidates, 24);
+        return buildCuratedDiscoveryItems(featured, discoverySignals, 18);
+    }, [homeSectionCandidates, discoverySignals]);
+
+    const posterWarmupItems = useMemo(() => {
+        const seen = new Set<string>();
+        const candidates = [
+            ...keywordItems.slice(0, 2),
+            ...personalizedItems.slice(0, 2),
+            ...recommendedItems.slice(0, 2),
+            ...displayPerformances.slice(0, 4),
+        ];
+
+        return candidates.filter((item) => {
+            if (!item?.id || seen.has(item.id)) return false;
+            seen.add(item.id);
+            return true;
+        });
+    }, [displayPerformances, keywordItems, personalizedItems, recommendedItems]);
+    const posterWarmupKey = useMemo(() => posterWarmupItems.map((item) => item.id).join('|'), [posterWarmupItems]);
+
+    useEffect(() => {
+        if (posterWarmupItems.length === 0) return;
+        if (activeOverlay) return;
+        const isDesktopPointer = typeof window !== 'undefined'
+            && (window.matchMedia?.('(hover: hover) and (pointer: fine)').matches ?? false);
+        return warmPosterImages(posterWarmupItems, {
+            limit: isDesktopPointer ? 12 : 5,
+            width: isDesktopPointer ? 360 : 300,
+            quality: isDesktopPointer ? 58 : 54,
+            concurrency: isDesktopPointer ? 2 : 1,
+        });
+    }, [activeOverlay, posterWarmupKey, posterWarmupItems]);
+
+    useEffect(() => {
+        if (selectedGenre !== 'all' && !isGenreAvailable(genreCounts, selectedGenre)) {
+            setSelectedGenre('all');
+        }
+    }, [genreCounts, selectedGenre, setSelectedGenre]);
+
+    useEffect(() => {
+        if (selectedGenre !== 'all') {
+            trackGenreView(selectedGenre);
+        }
+    }, [selectedGenre, trackGenreView]);
+
+    // --- Search Synchronization Helper ---
+    const syncSearchToUrl = useCallback((
+        q: string,
+        mode: 'keyword' | 'location',
+        loc: { lat: number, lng: number, name: string } | null,
+        genre: string = selectedGenre,
+        date: DateFilterId | null = selectedDateFilter,
+        price: PriceFilterId | null = selectedPriceTier,
+    ) => {
+        const path = genre === 'all' ? '/' : `/${genre === 'play' ? 'theater' : genre}`;
+        const params = new URLSearchParams();
+
+        if (q.trim()) params.set('q', q.trim());
+        params.set('mode', mode);
+
+        if (mode === 'location' && loc) {
+            params.set('lat', String(loc.lat));
+            params.set('lng', String(loc.lng));
+            params.set('venue', loc.name);
+        }
+        if (date) params.set('date', date);
+        if (price) params.set('price', price);
+
+        router.push(`${path}?${params.toString()}`);
+    }, [router, selectedGenre, selectedDateFilter, selectedPriceTier]);
+
+    // --- Handlers ---
+    const handleDetailPrepare = useCallback(() => {
+        void loadSharedDetailModal();
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const idleWindow = window as Window & typeof globalThis & {
+            requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
+            cancelIdleCallback?: (handle: number) => void;
+        };
+
+        if (typeof idleWindow.requestIdleCallback === 'function') {
+            const id = idleWindow.requestIdleCallback(() => {
+                void loadSharedDetailModal();
+            }, { timeout: 2500 });
+            return () => idleWindow.cancelIdleCallback?.(id);
+        }
+
+        const timer = window.setTimeout(() => {
+            void loadSharedDetailModal();
+        }, 1200);
+        return () => window.clearTimeout(timer);
+    }, []);
+
+    const handleDetailOpen = useCallback((perf: Performance) => {
+        trackItemView(perf.id);
+        void loadSharedDetailModal();
+        warmPosterImages([perf], {
+            limit: 1,
+            width: 560,
+            quality: 62,
+            concurrency: 1,
+            immediate: true,
+            includeOriginalFallback: false,
+        });
+        modalReturnScrollY.current = typeof window !== 'undefined' ? window.scrollY : 0;
+        setSharedPerf(perf);
+
+        if (typeof window !== 'undefined') {
+            const nextUrl = `${window.location.pathname}${window.location.search}#p=${encodeURIComponent(perf.id)}`;
+            window.history.pushState({ cultureFlowModal: perf.id }, '', nextUrl);
+        }
+    }, [trackItemView]);
+
+    const handleSharedDetailClose = useCallback(() => {
+        setSharedPerf(null);
+
+        if (typeof window !== 'undefined' && window.location.hash.startsWith('#p=')) {
+            window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+        }
+
+        if (typeof window !== 'undefined') {
+            const returnY = modalReturnScrollY.current;
+            window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(() => window.scrollTo({ top: returnY, behavior: 'auto' }));
+            });
+        }
+    }, []);
+    const handleSearchParams = useCallback((sp: URLSearchParams) => {
+        setSearchParamsState(sp);
+        const dateParam = sp.get('date');
+        if (dateParam && DATE_FILTERS.some(d => d.id === dateParam)) {
+            setSelectedDateFilter(dateParam as DateFilterId);
+        }
+        const priceParam = sp.get('price');
+        if (priceParam && PRICE_FILTERS.some(p => p.id === priceParam)) {
+            setSelectedPriceTier(priceParam as PriceFilterId);
+        }
+    }, [setSelectedDateFilter, setSelectedPriceTier]);
+
+    const copyItemShareUrl = useCallback(async (id: string) => {
+        const url = `${window.location.origin}${process.env.NEXT_PUBLIC_BASE_PATH || ''}/p/${id}/`;
+        await navigator.clipboard.writeText(url);
+        return true;
+    }, []);
+
+    const handleSearchChange = useCallback((text: string) => {
+        setSearchText(text);
+        if (text.trim().length > 0) {
+            setSelectedGenre('all');
+            setSelectedRegion('all');
+            setSelectedDistrict('all');
+            setSelectedVenue('all');
+            setDiscoveryContextId('all');
+            setSelectedDateFilter(null);
+            setSelectedPriceTier(null);
+            setSearchLocation(null);
+            setUserLocation(null);
+            persistRegionSelection('all', 'all', 'all');
+
+            if (isCategoryPage) {
+                const params = new URLSearchParams();
+                params.set('q', text.trim());
+                params.set('mode', searchMode);
+                router.replace(`/?${params.toString()}`);
+            }
+        } else {
+            // If cleared manually, remove from URL
+            if (searchParams.has('q')) {
+                const path = window.location.pathname;
+                router.replace(path);
+            }
+        }
+    }, [
+        isCategoryPage,
+        router,
+        searchMode,
+        searchParams,
+        setSearchLocation,
+        setSearchText,
+        setSelectedDateFilter,
+        setSelectedDistrict,
+        setSelectedGenre,
+        setSelectedPriceTier,
+        setSelectedRegion,
+        setSelectedVenue,
+        setUserLocation,
+    ]);
+
+    const handleResetLocationSearch = useCallback(() => {
+        setSearchLocation(null);
+        setUserLocation(null);
+        setSearchText('');
+        setSearchMode('keyword');
+        setIsDropdownOpen(false);
+
+        const path = selectedGenre === 'all' ? '/' : `/${selectedGenre === 'play' ? 'theater' : selectedGenre}`;
+        router.replace(path);
+    }, [router, selectedGenre, setIsDropdownOpen, setSearchLocation, setSearchMode, setSearchText, setUserLocation]);
+
+    const resetHome = useCallback(() => {
+        setSelectedGenre('all');
+        setSelectedRegion('all');
+        setSelectedDistrict('all');
+        setSelectedVenue('all');
+        setDiscoveryContextId('all');
+        setSelectedDateFilter(null);
+        setSelectedPriceTier(null);
+        setSearchLocation(null);
+        setUserLocation(null);
+        setSearchText('');
+        setSearchMode('keyword');
+        setIsDropdownOpen(false);
+        setViewMode('grid');
+        persistRegionSelection('all', 'all', 'all');
+
+        if (typeof window !== 'undefined') {
+            try {
+                sessionStorage.removeItem('cf_state_all');
+                sessionStorage.removeItem(`cf_state_${selectedGenre}`);
+            } catch {}
+        }
+
+        router.replace('/');
+        if (typeof window !== 'undefined') {
+            window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        }
+    }, [
+        router,
+        selectedGenre,
+        setIsDropdownOpen,
+        setSearchLocation,
+        setSearchMode,
+        setSearchText,
+        setSelectedDateFilter,
+        setSelectedDistrict,
+        setSelectedGenre,
+        setSelectedPriceTier,
+        setSelectedRegion,
+        setSelectedVenue,
+        setUserLocation,
+        setViewMode
+    ]);
+
+    const handleGenreSelect = useCallback((g: string) => {
+        setSelectedGenre(g);
+        if (g !== 'movie') setShuffleSeed(Date.now());
+        if (viewMode === 'likes-perf') setViewMode('grid');
+
+        syncSearchToUrl(searchText, searchMode, searchLocation, g);
+    }, [setSelectedGenre, setShuffleSeed, viewMode, setViewMode, syncSearchToUrl, searchText, searchMode, searchLocation]);
+
+    // Chip toggles: update state AND push to URL so the link is shareable.
+    const handleDateChipChange = useCallback((next: DateFilterId | null) => {
+        setSelectedDateFilter(next);
+        syncSearchToUrl(searchText, searchMode, searchLocation, selectedGenre, next, selectedPriceTier);
+    }, [setSelectedDateFilter, syncSearchToUrl, searchText, searchMode, searchLocation, selectedGenre, selectedPriceTier]);
+
+    const handlePriceChipChange = useCallback((next: PriceFilterId | null) => {
+        setSelectedPriceTier(next);
+        syncSearchToUrl(searchText, searchMode, searchLocation, selectedGenre, selectedDateFilter, next);
+    }, [setSelectedPriceTier, syncSearchToUrl, searchText, searchMode, searchLocation, selectedGenre, selectedDateFilter]);
+
+    const handleLikePerfClick = useCallback(() => {
+        if (viewMode === 'likes-perf') {
+            setViewMode('grid');
+            setTimeout(() => window.scrollTo({ top: savedScrollPosition, behavior: 'auto' }), 10);
+        } else {
+            setSavedScrollPosition(window.scrollY);
+            setViewMode('likes-perf');
+            setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 10);
+        }
+    }, [viewMode, setViewMode, savedScrollPosition, setSavedScrollPosition]);
+
+    // --- Effects (Lifecycle & Logic) ---
+
+    // 1. Infinite Scroll Observer
+    useEffect(() => {
+        if (!observerTarget.current) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (!entries[0].isIntersecting) return;
+                if (hasMore) {
+                    loadMore();
+                    return;
+                }
+                if (hasMorePerformancePages && !isPerformancePageLoading) {
+                    void loadNextPerformancePage();
+                }
+            },
+            { threshold: 0.1, rootMargin: '900px' }
+        );
+
+        observer.observe(observerTarget.current);
+        return () => observer.disconnect();
+    }, [hasMore, hasMorePerformancePages, isPerformancePageLoading, loadMore, loadNextPerformancePage]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        let frame = 0;
+        const checkNearBottom = () => {
+            frame = 0;
+            const documentElement = document.documentElement;
+            const remaining = documentElement.scrollHeight - (window.scrollY + window.innerHeight);
+            if (remaining > 1200) return;
+
+            if (hasMore) {
+                loadMore();
+                return;
+            }
+
+            if (hasMorePerformancePages && !isPerformancePageLoading) {
+                void loadNextPerformancePage();
+            }
+        };
+
+        const requestCheck = () => {
+            if (frame) return;
+            frame = window.requestAnimationFrame(checkNearBottom);
+        };
+
+        window.addEventListener('scroll', requestCheck, { passive: true });
+        window.addEventListener('resize', requestCheck, { passive: true });
+        requestCheck();
+
+        return () => {
+            if (frame) window.cancelAnimationFrame(frame);
+            window.removeEventListener('scroll', requestCheck);
+            window.removeEventListener('resize', requestCheck);
+        };
+    }, [hasMore, hasMorePerformancePages, isPerformancePageLoading, loadMore, loadNextPerformancePage]);
+
+    // 2. Deep Link Support (Shared Content Modal)
+    useEffect(() => {
+        if (deepLinkHandled.current || !scopedPerformances.length) return;
+
+        const hash = window.location.hash;
+        const match = hash.match(/^#p=(.+)$/);
+        if (match && match[1]) {
+            const id = decodeURIComponent(match[1]);
+            const perf = scopedPerformances.find(p => p.id === id || p.aliasIds?.includes(id));
+            if (perf) {
+                setSharedPerf(perf);
+                deepLinkHandled.current = true;
+                // Clean the hash from the URL so it doesn't reopen on refresh
+                window.history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+        }
+    }, [scopedPerformances]);
+
+    useEffect(() => {
+        const handlePopState = () => {
+            const match = window.location.hash.match(/^#p=(.+)$/);
+            if (!match?.[1]) {
+                setSharedPerf(null);
+                window.requestAnimationFrame(() => window.scrollTo({ top: modalReturnScrollY.current, behavior: 'auto' }));
+                return;
+            }
+
+            const id = decodeURIComponent(match[1]);
+            const perf = scopedPerformances.find((item) => item.id === id || item.aliasIds?.includes(id));
+            modalReturnScrollY.current = window.scrollY;
+            setSharedPerf(perf || null);
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [scopedPerformances]);
+
+    const handleOpenMap = useCallback(() => {
+        const params = new URLSearchParams();
+        params.set('genre', selectedGenre);
+
+        if (searchMode === 'location' && activeLocation) {
+            const venueName = 'name' in activeLocation ? (activeLocation as any).name : '내 위치';
+            params.set('mode', 'location');
+            params.set('lat', String(activeLocation.lat));
+            params.set('lng', String(activeLocation.lng));
+            params.set('venue', venueName);
+        } else {
+            params.set('mode', searchMode);
+            if (searchText.trim()) params.set('q', searchText.trim());
+        }
+
+        setOverlaySearchParams(params.toString());
+        setActiveOverlay('map');
+    }, [searchMode, activeLocation, selectedGenre, searchText]);
+
+    const handleOpenCalendar = useCallback(() => {
+        const params = new URLSearchParams();
+        params.set('genre', selectedGenre);
+        setOverlaySearchParams(params.toString());
+        setActiveOverlay('calendar');
+    }, [selectedGenre]);
+
+    const handleCloseOverlay = useCallback(() => {
+        setActiveOverlay(null);
+        if (typeof window !== 'undefined') {
+            const returnY = window.scrollY;
+            window.requestAnimationFrame(() => {
+                window.scrollTo({ top: returnY, behavior: 'auto' });
+            });
+        }
+    }, []);
+
+    return (
+        <div className="min-h-screen bg-transparent text-white light:text-black">
+            {/* URL searchParams bridge - isolated so the rest of the tree can be
+                prerendered without bailing out to client-side rendering. We also
+                hydrate the chip-filter state (date / price) from the URL here so
+                a shared link like ?date=weekend&price=under-50k restores the same
+                view. */}
+            <Suspense fallback={null}>
+                <SearchParamsBridge onParams={handleSearchParams} />
+            </Suspense>
+            <RainbowBackground />
+            <div className="noise-texture z-0 mix-blend-overlay opacity-20 fixed inset-0 pointer-events-none"></div>
+
+            {/* 1. Header & Alarm Panel */}
+            <header className="relative z-40 bg-transparent border-b border-transparent light:border-transparent">
+                <div className="max-w-7xl 2xl:max-w-[1800px] mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
+                    <Link
+                        href="/"
+                        className="flex items-center gap-3 cursor-pointer group pointer-events-auto"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            resetHome();
+                            router.push('/');
+                        }}
+                    >
+                        <div className="relative w-10 h-10 transition-transform group-hover:scale-110">
+                            <Image src={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/images/cultureflow-app-icon-cutout.png?v=20261028`} alt="Culture Flow icon" fill className="object-contain" priority />
+                        </div>
+                        <h1 className="text-[1.5rem] md:text-3xl font-black tracking-tight group-hover:text-[#a78bfa] transition-colors leading-[0.9]">
+                            Culture Flow
+                        </h1>
+                    </Link>
+
+                    <div className="flex items-center gap-1">
+                        <button onClick={toggleTheme} className="p-2 rounded-full text-gray-400 light:text-gray-500 hover:text-white light:hover:text-black">
+                            {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
+                        </button>
+                        <button onClick={() => setIsAlarmOpen(!isAlarmOpen)} className={clsx("p-2 rounded-full relative", isAlarmOpen ? "text-purple-300" : "text-gray-400")}>
+                            <Bell size={24} className={clsx(isAlarmOpen && "animate-pulse")} />
+                            {savedKeywords.length > 0 && (
+                                <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[9px] font-extrabold rounded-full flex items-center justify-center shadow-md border border-white/20">
+                                    {savedKeywords.length}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <AlarmPanel
+                isOpen={isAlarmOpen} onClose={() => setIsAlarmOpen(false)} keywordInput={keywordInput}
+                onKeywordInputChange={setKeywordInput} onAddKeyword={addKeyword} savedKeywords={savedKeywords} onRemoveKeyword={removeKeyword}
+            />
+
+            {/* 2. Hero Section */}
+            <ErrorBoundary fallback={<div>Hero Error</div>}>
+                <HeroSection
+                    heroText={heroText} onCycle={selectNextTemplate} isHeroVisible={isHeroVisible} viewMode={viewMode} selectedGenre={selectedGenre}
+                    selectedRegion={selectedRegion} selectedDistrict={selectedDistrict} selectedVenue={selectedVenue}
+                    activeLocation={activeLocation ? { name: searchLocation?.name || '내 위치' } : null}
+                    userAddress={userAddress} radius={radius} searchLocation={searchLocation} searchText={searchText}
+                    searchResults={visibleSearchResults} isDropdownOpen={isDropdownOpen} activeSearchSource={activeSearchSource} highlightedIndex={highlightedIndex}
+                    setIsHeroFilterExpanded={setIsHeroFilterExpanded} isHeroFilterExpanded={isHeroFilterExpanded} setSelectedRegion={setSelectedRegion}
+                    setSelectedDistrict={setSelectedDistrict} setSelectedVenue={setSelectedVenue} setUserLocation={setUserLocation}
+                    setSearchLocation={setSearchLocation} setRadius={setRadius} setSearchText={setSearchText} onSearchChange={handleSearchChange}
+                    setActiveSearchSource={setActiveSearchSource} setIsDropdownOpen={setIsDropdownOpen} handleSearch={() => { }}
+                    handleSelectResult={(res: any) => {
+                        setSearchText(res.name);
+
+                        setSelectedGenre('all');
+                        setSelectedRegion('all');
+                        setSelectedDistrict('all');
+                        setSelectedVenue('all');
+
+                        if (res.type === 'location' && Number.isFinite(res.lat) && Number.isFinite(res.lng)) {
+                            const nextLocation = { lat: res.lat, lng: res.lng, name: res.name };
+                            setUserLocation(null);
+                            setSearchLocation(nextLocation);
+                            setSearchMode('location');
+                            setIsDropdownOpen(false);
+                            syncSearchToUrl(res.name, 'location', nextLocation, 'all');
+                            return;
+                        }
+
+                        setSearchLocation(null);
+                        setSearchMode('keyword');
+                        setIsDropdownOpen(false);
+                        syncSearchToUrl(res.name, 'keyword', null, 'all');
+                    }}
+                    handleKeyDown={(e: React.KeyboardEvent) => {
+                        if (e.key === 'Enter') {
+                            if (searchMode === 'location') {
+                                setIsDropdownOpen(false);
+                                return;
+                            }
+
+                            setSelectedGenre('all');
+                            setSelectedRegion('all');
+                            setSelectedDistrict('all');
+                            setSelectedVenue('all');
+                            setSearchLocation(null);
+                            setSearchMode('keyword');
+
+                            syncSearchToUrl(searchText, 'keyword', null, 'all');
+                        }
+                    }} handleCurrentLocationClick={() => { setUserLocation(null); setSearchLocation(null); }}
+                    availableVenues={availableVenues} districts={districts} venueLookup={venues} recentKeywords={savedKeywords}
+                    onKeywordSelect={(k) => {
+                        setSearchText(k);
+                        // Reset all filters for a clean keyword search
+                        setSelectedGenre('all');
+                        setSelectedRegion('all');
+                        setSelectedDistrict('all');
+                        setSelectedVenue('all');
+                        setSearchLocation(null);
+                        setSearchMode('keyword');
+
+                        syncSearchToUrl(k, 'keyword', null, 'all');
+                    }} onRemoveRecent={removeKeyword} onClearRecent={() => setSavedKeywords([])}
+                    searchMode={searchMode} onSearchModeChange={(m) => {
+                        setSearchMode(m);
+                        if (m === 'keyword') {
+                            setSearchLocation(null);
+                            syncSearchToUrl(searchText, 'keyword', null);
+                        } else if (searchLocation) {
+                            syncSearchToUrl(searchText, 'location', searchLocation);
+                        }
+                    }}
+                />
+            </ErrorBoundary>
+
+            {/* Data Sections */}
+            {(viewMode === 'grid' || viewMode === 'list') && !searchText && !searchLocation && selectedGenre === 'all' && (
+                <div className="max-w-7xl 2xl:max-w-[1800px] mx-auto mt-14 px-4 space-y-14 relative z-10">
+                    {isDataFullyLoaded && keywordItems.length > 0 && <KeywordSection keywordItems={keywordItems} onDetail={handleDetailOpen} onDetailPrepare={handleDetailPrepare} searchMode={searchMode} />}
+                    <PersonalizedSection
+                        items={personalizedItems}
+                        onDetail={handleDetailOpen}
+                        onDetailPrepare={handleDetailPrepare}
+                        searchMode={searchMode}
+                        subtitle={`좋아요, 저장 키워드, 자주 본 장르, 찜한 공연장을 함께 읽어서 첫 화면을 조금 더 나답게 정리했어요. ${freshnessNote}`}
+                    />
+                    <RecommendedSection
+                        recommendedItems={recommendedItems}
+                        onDetail={handleDetailOpen}
+                        onDetailPrepare={handleDetailPrepare}
+                        onLocationClick={(loc) => setSearchLocation(loc as any)}
+                        onToggleLike={toggleLike}
+                        likedIds={new Set(likedIds)}
+                        searchMode={searchMode}
+                        title="지금 주목할 콘텐츠"
+                        subtitle={`이번 주에 보기 좋고, 시즌에도 잘 맞고, 장르가 한쪽으로 몰리지 않도록 고른 흐름입니다. ${freshnessNote}`}
+                    />
+                </div>
+            )}
+
+            {/* 3. Main Content */}
+            <main className="max-w-7xl 2xl:max-w-[1800px] mx-auto px-4 py-8 relative z-10">
+                <div className="px-[1.6%]">
+                    <ResultsHeader
+                        viewMode={viewMode} activeLocation={activeLocation} searchLocation={searchLocation} searchText={searchText}
+                        searchMode={searchMode} selectedGenre={selectedGenre} filteredCount={displayFilteredCount} radius={radius}
+                        lastUpdated={lastUpdated}
+                        totalItemCount={totalItemCount}
+                        availableGenreCount={availableGenreCount}
+                        qualitySummary={buildInfo?.qualitySummary}
+                        sourceHealthSummary={buildInfo?.sourceHealthSummary}
+                        discoveryContexts={DISCOVERY_CONTEXTS}
+                        activeDiscoveryContext={discoveryContextId}
+                        onDiscoveryContextChange={setDiscoveryContextId}
+                        selectedDateFilter={selectedDateFilter}
+                        onDateFilterChange={handleDateChipChange}
+                        selectedPriceTier={selectedPriceTier}
+                        onPriceTierChange={handlePriceChipChange}
+                        selectedRegion={selectedRegion}
+                        selectedDistrict={selectedDistrict}
+                        selectedVenue={selectedVenue}
+                        onResetFilters={resetHome}
+                        onRadiusChange={setRadius}
+                    />
+
+                    {isSearchDataLoading ? (
+                        <div className="flex min-h-[280px] items-center justify-center py-12" role="status" aria-live="polite">
+                            <Loader2 className="animate-spin text-purple-500" />
+                            <span className="ml-3 text-gray-400">전체 검색 결과를 불러오는 중...</span>
+                        </div>
+                    ) : filteredPerformances.length === 0 && viewMode !== 'likes-perf' && isDataFullyLoaded ? (
+                        <EmptyState viewMode={viewMode} selectedGenre={selectedGenre} setSelectedRegion={setSelectedRegion} setSelectedDistrict={setSelectedDistrict} setSearchText={setSearchText} setUserLocation={setUserLocation} setIsMapOpen={handleOpenMap} searchMode={searchMode} setSearchMode={setSearchMode} searchText={searchText} />
+                    ) : viewMode === 'likes-perf' ? (
+                        <LikedSections
+                            viewMode={viewMode} allPerformances={scopedPerformances} likedIds={likedIds} favoriteVenues={favoriteVenues}
+                            venues={venues} onToggleLike={toggleLike} onDetailOpen={handleDetailOpen} onSetSearchLocation={setSearchLocation}
+                            onVenuePreview={(loc) => {
+                                const params = new URLSearchParams();
+                                params.set('genre', selectedGenre);
+                                params.set('mode', 'location');
+                                params.set('lat', String(loc.lat));
+                                params.set('lng', String(loc.lng));
+                                params.set('venue', loc.name);
+                                setOverlaySearchParams(params.toString());
+                                setActiveOverlay('map');
+                            }} setIsMapOpen={handleOpenMap}
+                            copyItemShareUrl={copyItemShareUrl} selectedGenre={selectedGenre} searchMode={searchMode} searchText={searchText}
+                            setShowFavoriteListModal={setShowFavoriteListModal} layoutMode={layoutMode}
+                        />
+                    ) : (
+                        <PerformanceGrid
+                            items={displayPerformances}
+                            hasMore={hasMore || hasMorePerformancePages || isPerformancePageLoading}
+                            observerRef={observerTarget}
+                            layoutMode={layoutMode}
+                            selectedVenue={selectedVenue}
+                            activeLocation={activeLocation}
+                            venues={venues}
+                            likedIds={likedIds}
+                            onToggleLike={toggleLike}
+                            handleDetailOpen={handleDetailOpen}
+                            handleDetailPrepare={handleDetailPrepare}
+                            setSearchLocation={setSearchLocation}
+                            onVenuePreview={(loc) => {
+                                const params = new URLSearchParams();
+                                params.set('genre', selectedGenre);
+                                params.set('mode', 'location');
+                                params.set('lat', String(loc.lat));
+                                params.set('lng', String(loc.lng));
+                                params.set('venue', loc.name);
+                                setOverlaySearchParams(params.toString());
+                                setActiveOverlay('map');
+                            }}
+                            setIsMapOpen={handleOpenMap}
+                            copyItemShareUrl={copyItemShareUrl}
+                            selectedGenre={selectedGenre}
+                            viewMode={viewMode}
+                            searchMode={searchMode}
+                            searchText={searchText}
+                        />
+                    )}
+
+                    {!isSearchDataLoading && (!isDataFullyLoaded || isPerformancePageLoading) && (
+                        <div className="flex justify-center py-12">
+                            <Loader2 className="animate-spin text-purple-500" />
+                            <span className="ml-3 text-gray-400">콘텐츠를 이어서 불러오는 중...</span>
+                        </div>
+                    )}
+                </div>
+            </main>
+
+            {/* 4. Navigation & Modals */}
+            <BottomNav activeMenu={activeBottomMenu} currentViewMode={viewMode} onMenuClick={setActiveBottomMenu} onLikePerfClick={handleLikePerfClick} onMapClick={handleOpenMap} onCalendarClick={handleOpenCalendar} likeCount={likedIds.length} venueCount={favoriteVenues.length} selectedGenre={selectedGenre} searchMode={searchMode} />
+
+            <BottomNavSheet activeMenu={activeBottomMenu} onClose={() => setActiveBottomMenu(null)} viewMode={viewMode} onViewModeChange={setViewMode} selectedGenre={selectedGenre} availableGenres={genreNavigationItems} onGenreSelect={handleGenreSelect} selectedRegion={selectedRegion} onRegionSelect={setSelectedRegion} selectedDistrict={selectedDistrict} onDistrictSelect={setSelectedDistrict} selectedVenue={selectedVenue} venues={venues} onVenueSelect={(v) => {
+                setSelectedVenue(v);
+
+                // Location Mode Integration: Intercept venue selection to trigger location search
+                const representativeVenue = v !== 'all'
+                    ? getRepresentativeVenueInfoForName(v, scopedPerformances, venues)
+                    : null;
+
+                if (v !== 'all' && representativeVenue?.lat && representativeVenue?.lng) {
+                    // [RESET ALL FILTERS] As requested, reset existing filtering related parts
+                    setSelectedGenre('all');
+                    setSelectedRegion('all');
+                    setSelectedDistrict('all');
+                    setSavedKeywords([]); // Reset saved keywords if applicable
+                    
+                    setSearchMode('location');
+                    setSearchLocation({ lat: representativeVenue.lat, lng: representativeVenue.lng, name: v });
+                    setSearchText(v);
+                    setRadius(1);
+
+                    // Force UI adjustments
+                    setActiveBottomMenu(null); // Close the bottom sheet immediately
+                    
+                    // Reset pagination/scroll
+                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 10);
+                }
+            }} searchText={searchText} onSearchChange={handleSearchChange} keywords={savedKeywords} onKeywordAdd={addKeyword} onKeywordRemove={removeKeyword} districts={districts} availableVenues={availableVenues} onSearch={() => { }} searchMode={searchMode} onSearchModeChange={setSearchMode} activeLocation={activeLocation} searchResults={visibleSearchResults} onResultSelect={(res) => {
+                setSearchText(res.name);
+                if (res.type === 'location' && Number.isFinite(res.lat) && Number.isFinite(res.lng)) {
+                    setSelectedGenre('all');
+                    setSelectedRegion('all');
+                    setSelectedDistrict('all');
+                    setSelectedVenue('all');
+                    setUserLocation(null);
+                    const nextLocation = { lat: res.lat, lng: res.lng, name: res.name };
+                    setSearchMode('location');
+                    setSearchLocation(nextLocation);
+                    syncSearchToUrl(res.name, 'location', nextLocation, 'all');
+                } else {
+                    setSearchLocation(null);
+                    setSearchMode('keyword');
+                    syncSearchToUrl(res.name, 'keyword', null, 'all');
+                }
+            }} />
+
+            {showFavoriteListModal && <FavoriteVenuesModal isOpen={showFavoriteListModal} onClose={() => setShowFavoriteListModal(false)} favoriteVenues={favoriteVenues} onRemove={toggleFavoriteVenue} onVenueClick={(favoriteVenue) => {
+                const representativeVenue = getRepresentativeVenueInfoForFavorite(favoriteVenue, scopedPerformances, venues);
+                const params = new URLSearchParams();
+                params.set('genre', selectedGenre);
+                params.set('mode', 'location');
+                params.set('lat', String(representativeVenue?.lat || 0));
+                params.set('lng', String(representativeVenue?.lng || 0));
+                params.set('venue', favoriteVenue.venueName);
+                setOverlaySearchParams(params.toString());
+                setActiveOverlay('map');
+            }} />}
+            {sharedPerf && <SharedDetailModal performance={sharedPerf} allPerformances={scopedPerformances} onClose={handleSharedDetailClose} />}
+            {activeOverlay === 'map' && (
+                <MapViewOverlay
+                    key={overlaySearchParams || 'map'}
+                    initialPerformances={[]}
+                    initialGenreCounts={genreCounts}
+                    buildInfo={buildInfo}
+                    lastUpdated={lastUpdated}
+                    embeddedSearchParams={overlaySearchParams}
+                    onClose={handleCloseOverlay}
+                    favoriteVenues={favoriteVenues}
+                    onToggleFavoriteVenue={toggleFavoriteVenue}
+                />
+            )}
+            {activeOverlay === 'calendar' && (
+                <CalendarViewOverlay
+                    performances={[]}
+                    initialGenreCounts={genreCounts}
+                    buildInfo={buildInfo}
+                    lastUpdated={lastUpdated}
+                    embeddedSearchParams={overlaySearchParams}
+                    onClose={handleCloseOverlay}
+                    likedIds={likedIds}
+                    onToggleLike={toggleLike}
+                />
+            )}
+        </div>
+    );
+}

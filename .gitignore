@@ -1,0 +1,132 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+/test-results
+
+# next.js
+/.next/
+/out/
+/tsconfig.tsbuildinfo
+next-env.d.ts
+
+# production
+/build
+/tmp_build
+
+# misc
+.DS_Store
+/logs/
+*.pem
+*.key
+oracle_key
+Untitled-*.psd
+*.psd
+*.zip
+*.log
+*.txt
+!public/version.txt
+!README.md
+!docs/**/*.md
+!REMEDIATION.md
+!RESUME_GUIDE.md
+!ERROR_TRACKER.md
+
+# screenshots & debug images / dumps
+debug-*.png
+debug-*.html
+debug_*
+error_row_*.png
+naver_debug*.png
+interpark*_screenshot.png
+*_debug.html
+*_debug.json
+*_debug.png
+*_debug.log
+debug_output.txt
+debug_html_empty_list.txt
+kbl_debug.html
+kovo_debug.html
+timeticket_item_dump.html
+coex-page.html
+venue_page_v2.html
+*.webp
+!public/images/posters/**/*.webp
+!public/images/thumbs/**/*.webp
+!public/images/logos/**/*.webp
+
+# one-off root clutter
+/0
+/=
+/1200x600.jpg
+/256x256.jpg
+ReadMe.rtf
+QUALITY_REPORT.json
+geospatial_audit_report.md
+export_venues_csv*.js
+get-missing-sample.js
+test-*.js
+kovo.js
+mochaclass_debug.json
+debug_daum_api.json
+
+# data/cache / audit exports (generated)
+venue_cache.json
+venue_report.*
+venue_export*.csv
+venues_export.csv
+venues_for_review.csv
+unmatched_sports_venues.json
+venue_audit.csv
+venue_export.csv
+venue_coordinate_mismatches.csv
+venue_validation_log.txt
+missing_venues.txt
+missing_venues_report.json
+tmp/
+tmp-*.json
+ship-*.sh
+scrape_failures.txt
+scrape_recovered_failures.txt
+
+# npm local caches committed by mistake
+.npm-local-cache/
+.npm_cache/
+
+# env files
+.env*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+# editor
+.idea/
+.vscode/
+*.swp
+*~
+install-improvements.mjs
+src/data/_scraper-health-session.json
+
+# local AI-tool / PDCA state (never commit)
+docs/.pdca-snapshots/
+docs/.bkit-memory.json
+docs/.pdca-status.json
+venue_report 2.*
+server.log
+
+# Local AI build outputs (scripts/ai/vision-ocr.swift binary)
+.cache/ai/

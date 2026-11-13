@@ -1,0 +1,431 @@
+name: Daily Data Update
+
+on:
+  schedule:
+    - cron: '0 18 * * *' # 03:00 KST fallback. The Mac mini scheduler (weekdays 18:00-08:00, weekends all day) is primary; it stays out of 02:40-04:45 KST.
+  workflow_dispatch:
+
+concurrency:
+  group: daily-data-update
+  cancel-in-progress: true
+
+jobs:
+  update-data:
+    # Playwright currently supports Ubuntu 24.04, not the Ubuntu 26 image
+    # behind ubuntu-latest after GitHub's runner migration.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    permissions:
+      contents: write
+      issues: write
+    outputs:
+      data_changed: ${{ steps.commit_changes.outputs.data_changed || 'false' }}
+      deployed_sha: ${{ steps.commit_changes.outputs.deployed_sha || '' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Check local update freshness
+        id: freshness
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const outputPath = process.env.GITHUB_OUTPUT;
+          const eventName = process.env.GITHUB_EVENT_NAME || '';
+          const buildInfoPath = path.join(process.cwd(), 'public', 'data', 'build-info.json');
+          const writeOutput = (key, value) => fs.appendFileSync(outputPath, `${key}=${value}\n`);
+          const kstDate = (date) => new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }).format(date);
+
+          if (eventName === 'workflow_dispatch') {
+            writeOutput('should_run', 'true');
+            writeOutput('skip_reason', 'manual-dispatch');
+            console.log('Manual dispatch: running fallback update regardless of freshness.');
+            process.exit(0);
+          }
+
+          let generatedAt = null;
+          try {
+            generatedAt = JSON.parse(fs.readFileSync(buildInfoPath, 'utf8')).generatedAt || null;
+          } catch (error) {
+            writeOutput('should_run', 'true');
+            writeOutput('skip_reason', 'missing-build-info');
+            console.log('No readable build-info.json; running fallback update.');
+            process.exit(0);
+          }
+
+          const generatedDate = generatedAt ? new Date(generatedAt) : null;
+          const now = new Date();
+          const ageHours = generatedDate ? (now.getTime() - generatedDate.getTime()) / 36e5 : Infinity;
+          // Fresh = generated today (KST) within 20h, or by any local run in the last 6h.
+          const freshToday = generatedDate && ageHours >= 0
+            && ((kstDate(generatedDate) === kstDate(now) && ageHours <= 20) || ageHours <= 6);
+
+          if (freshToday) {
+            writeOutput('should_run', 'false');
+            writeOutput('skip_reason', 'local-update-already-fresh');
+            console.log(`Skipping fallback: local data is fresh. generatedAt=${generatedAt}, ageHours=${ageHours.toFixed(2)}`);
+          } else {
+            writeOutput('should_run', 'true');
+            writeOutput('skip_reason', 'fallback-needed');
+            console.log(`Running fallback: generatedAt=${generatedAt || 'none'}, ageHours=${Number.isFinite(ageHours) ? ageHours.toFixed(2) : 'unknown'}`);
+          }
+          NODE
+
+      - name: Skip summary
+        if: steps.freshness.outputs.should_run == 'false'
+        run: |
+          echo "Local midnight update already refreshed data today. GitHub fallback skipped."
+          echo "Reason: ${{ steps.freshness.outputs.skip_reason }}"
+
+      - name: Setup Node.js
+        if: steps.freshness.outputs.should_run == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Cache Playwright Chromium
+        if: steps.freshness.outputs.should_run == 'true'
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install dependencies
+        if: steps.freshness.outputs.should_run == 'true'
+        run: |
+          export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+          npm ci --prefer-offline --no-audit --fund=false
+
+      - name: Install Playwright Chromium
+        if: steps.freshness.outputs.should_run == 'true'
+        run: |
+          # --with-deps already installs required Linux browser dependencies.
+          npx playwright install chromium --with-deps
+
+      - name: Run Scrapers
+        if: steps.freshness.outputs.should_run == 'true'
+        timeout-minutes: 55
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+          # GitHub-hosted runners use rotating Azure IPs. Kakao REST API is
+          # restricted by allowed IP, so only the local Mac mini job may call it.
+          DISABLE_KAKAO_API: '1'
+          NAVER_SEARCH_CLIENT_ID: ${{ secrets.NAVER_SEARCH_CLIENT_ID }}
+          NAVER_SEARCH_CLIENT_SECRET: ${{ secrets.NAVER_SEARCH_CLIENT_SECRET }}
+          # Public-data API keys come from repository secrets only (never from code).
+          KOPIS_API_KEY: ${{ secrets.KOPIS_API_KEY }}
+          KOBIS_API_KEY: ${{ secrets.KOBIS_API_KEY }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          KCISA_API_KEY: ${{ secrets.KCISA_API_KEY }}
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          # GitHub Actions is only the 03:00 KST fallback. Keep it shallow, but
+          # still enrich the nearest Interpark items so visible cards do not lose
+          # price, age, and runtime when the Mac mini scheduler is stale.
+          # Browser (Puppeteer) detail pages hang on the hosted runner
+          # (Runtime.callFunctionOn timed out) and the job was killed at 480s,
+          # discarding the whole Interpark refresh every day since 2026-09-09.
+          # The fallback now uses the public JSON API instead and a hard budget.
+          INTERPARK_ENRICH_LIMIT: '0'
+          INTERPARK_API_ENRICH_LIMIT: '250'
+          INTERPARK_SESSION_LIMIT: '150'
+          INTERPARK_RUN_BUDGET_SECONDS: '400'
+          INTERPARK_FAST_MODE: '1'
+          INTERPARK_CONCURRENCY: '2'
+          INTERPARK_NAVIGATION_TIMEOUT_MS: '25000'
+          INTERPARK_SELECTOR_TIMEOUT_MS: '12000'
+          INTERPARK_POST_LOAD_DELAY_MS: '1500'
+          INTERPARK_PROTOCOL_TIMEOUT_MS: '45000'
+          # KOPIS always upserts full list stubs first (search completeness), then
+          # enriches details within this budget. Local midnight still does deep refresh.
+          KOPIS_DETAIL_LIMIT: '120'
+          KOPIS_VENUE_LIMIT: '40'
+          KOPIS_RUN_BUDGET_SECONDS: '480'
+          KOPIS_LOOKBACK_DAYS: '45'
+          KOPIS_REQUEST_RETRIES: '2'
+          KOPIS_REQUEST_TIMEOUT_MS: '10000'
+          YES24_DETAIL_LIMIT: '100'
+          UMCLASS_DETAIL_LIMIT: '80'
+          MOCHACLASS_MAX_PAGES: '28'
+          MOCHACLASS_DETAIL_LIMIT: '24'
+          MOCHACLASS_CONCURRENCY: '3'
+          MOCHACLASS_DETAIL_TIMEOUT_MS: '12000'
+          MOCHACLASS_SELECTOR_TIMEOUT_MS: '6000'
+          MOCHACLASS_POST_LOAD_DELAY_MS: '250'
+          MOCHACLASS_RETAIN_UNSEEN_EXISTING: '1'
+          MUSEUM_MAX_DETAIL_ITEMS: '160'
+          MUSEUM_DETAIL_BUDGET_MS: '180000'
+          CULTURE_PORTAL_MAX_API_PAGES: '360'
+          CULTURE_PORTAL_DETAIL_LIMIT: '180'
+          TOURISM_MAX_PAGES: '25'
+          TOURISM_PUPPETEER_TIMEOUT_MS: '12000'
+          SEOUL_CULTURE_SKIP_DETAIL: '1'
+          KBL_MONTH_LOOKAHEAD: '4'
+          UMCLASS_MAX_PAGES: '24'
+          UMCLASS_MISSING_GEO_CRITICAL_THRESHOLD: '1000'
+          VENUE_PLACE_LOOKUP_LIMIT: '0'
+          VENUE_PLACE_LOOKUP_DELAY_MS: '250'
+          SCRAPER_CRITICAL_TIMEOUT_SECONDS: '480'
+          SCRAPER_OPTIONAL_TIMEOUT_SECONDS: '240'
+          SCRAPER_RETRY_COUNT: '1'
+          SCRAPER_OPTIONAL_RETRY_COUNT: '0'
+          SCRAPER_OPTIONAL_BUDGET_SECONDS: '1200'
+        run: |
+          set +e
+          SCRAPER_CRITICAL_TIMEOUT_SECONDS="${SCRAPER_CRITICAL_TIMEOUT_SECONDS:-480}"
+          SCRAPER_OPTIONAL_TIMEOUT_SECONDS="${SCRAPER_OPTIONAL_TIMEOUT_SECONDS:-240}"
+          SCRAPER_RETRY_COUNT="${SCRAPER_RETRY_COUNT:-1}"
+          SCRAPER_OPTIONAL_RETRY_COUNT="${SCRAPER_OPTIONAL_RETRY_COUNT:-0}"
+          SCRAPER_OPTIONAL_BUDGET_SECONDS="${SCRAPER_OPTIONAL_BUDGET_SECONDS:-1200}"
+          SCRAPER_STARTED_AT="$(date +%s)"
+          SCRAPER_CHECKPOINT_ROOT="$RUNNER_TEMP/cultureflow-scraper-checkpoints"
+          mkdir -p "$SCRAPER_CHECKPOINT_ROOT"
+          PUPPETEER_EXECUTABLE_PATH="$(node -e "console.log(require('playwright').chromium.executablePath())")"
+          export PUPPETEER_EXECUTABLE_PATH
+          echo "Puppeteer executable: ${PUPPETEER_EXECUTABLE_PATH}"
+          failures=()
+          recovered_failures=()
+
+          elapsed_seconds() {
+            echo $(( $(date +%s) - SCRAPER_STARTED_AT ))
+          }
+
+          run_scraper() {
+            local name="$1"
+            local priority="$2"
+            shift 2
+
+            local elapsed timeout_seconds retry_count checkpoint_dir attempt status
+            elapsed="$(elapsed_seconds)"
+            if [ "$priority" = "optional" ] && [ "$elapsed" -ge "$SCRAPER_OPTIONAL_BUDGET_SECONDS" ]; then
+              echo "Skipping optional scraper ${name}: elapsed ${elapsed}s exceeds fallback budget ${SCRAPER_OPTIONAL_BUDGET_SECONDS}s"
+              return 0
+            fi
+
+            if [ "$priority" = "critical" ]; then
+              timeout_seconds="$SCRAPER_CRITICAL_TIMEOUT_SECONDS"
+              retry_count="$SCRAPER_RETRY_COUNT"
+            else
+              timeout_seconds="$SCRAPER_OPTIONAL_TIMEOUT_SECONDS"
+              retry_count="$SCRAPER_OPTIONAL_RETRY_COUNT"
+            fi
+
+            checkpoint_dir="$SCRAPER_CHECKPOINT_ROOT/$name"
+            rm -rf "$checkpoint_dir"
+            mkdir -p "$checkpoint_dir"
+            cp -a src/data "$checkpoint_dir/data"
+
+            echo "::group::${name}"
+            echo "Elapsed before ${name}: ${elapsed}s"
+            status=1
+            for attempt in $(seq 1 $((retry_count + 1))); do
+              echo "Attempt ${attempt}/$((retry_count + 1)); timeout=${timeout_seconds}s"
+              # Browser scrapers may leave Chromium children alive after TERM.
+              # Escalate after 15s so one source cannot consume the whole job.
+              timeout --preserve-status --kill-after=15s "${timeout_seconds}" "$@"
+              status=$?
+              if [ $status -eq 0 ]; then
+                break
+              fi
+
+              echo "${name} attempt ${attempt} failed with exit=${status}; restoring its data checkpoint."
+              rm -rf src/data
+              cp -a "$checkpoint_dir/data" src/data
+
+              if [ "$attempt" -le "$retry_count" ]; then
+                if [ "$priority" = "optional" ] && [ "$(elapsed_seconds)" -ge "$SCRAPER_OPTIONAL_BUDGET_SECONDS" ]; then
+                  echo "Not retrying optional scraper ${name}: fallback budget reached."
+                  break
+                fi
+                sleep $((attempt * 3))
+              fi
+            done
+            echo "::endgroup::"
+
+            if [ $status -eq 124 ] || [ $status -eq 137 ] || [ $status -eq 143 ]; then
+              echo "${name} timed out or was terminated after ${timeout_seconds}s"
+            fi
+
+            if [ $status -ne 0 ]; then
+              failures+=("$name")
+            elif [ "$attempt" -gt 1 ]; then
+              recovered_failures+=("$name")
+            fi
+
+            rm -rf "$checkpoint_dir"
+          }
+
+          while IFS=$'\t' read -r name priority command; do
+            run_scraper "$name" "$priority" bash -lc "$command"
+          done < <(node scripts/print-scraper-plan.mjs github)
+
+          : > scrape_failures.txt
+          if [ ${#failures[@]} -gt 0 ]; then
+            printf '%s\n' "${failures[@]}" > scrape_failures.txt
+            echo "SCRAPER_FAILURES=true" >> "$GITHUB_ENV"
+            echo "Scraper failures detected. Continuing with existing retained data; validation steps decide whether this fallback is publishable:"
+            cat scrape_failures.txt
+          fi
+
+          if [ ${#recovered_failures[@]} -gt 0 ]; then
+            printf '%s\n' "${recovered_failures[@]}" > scrape_recovered_failures.txt
+            echo "SCRAPER_RECOVERED_FAILURES=true" >> "$GITHUB_ENV"
+            echo "Scrapers recovered after retry:"
+            cat scrape_recovered_failures.txt
+          fi
+
+          exit 0
+
+      # Local-only sources (YES24, timeticket, myrealtrip, 국가유산청, cinema relay ids)
+      # are not in the github plan, so CI never rewrites them. Shared sources that
+      # are blocked here (Interpark API sessions/prices, Kakao) must not shrink
+      # either: restore the committed file when a run comes back suspiciously short.
+      - name: Keep last good local-only data
+        if: steps.freshness.outputs.should_run == 'true'
+        run: node scripts/guard-retained-data.mjs
+
+      - name: Scraper Failure Summary
+        if: steps.freshness.outputs.should_run == 'true' && env.SCRAPER_FAILURES == 'true'
+        run: |
+          {
+            echo "### Scraper warnings"
+            echo ""
+            echo "Some scrapers failed during the GitHub fallback pass, but this is not treated as a workflow failure by itself."
+            echo "The fallback continues with retained data and only fails if generation or validation fails."
+            echo ""
+            echo "Failed scrapers:"
+            sed 's/^/- /' scrape_failures.txt
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Scraper Recovery Summary
+        if: steps.freshness.outputs.should_run == 'true' && env.SCRAPER_RECOVERED_FAILURES == 'true'
+        run: |
+          {
+            echo "### Scrapers recovered after retry"
+            echo ""
+            sed 's/^/- /' scrape_recovered_failures.txt
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run Data Processing, Validation, and Commit
+        id: commit_changes
+        if: steps.freshness.outputs.should_run == 'true'
+        env:
+          UMCLASS_MISSING_GEO_CRITICAL_THRESHOLD: '1000'
+          POSTER_CACHE_MAX_NEW_DOWNLOADS: '3500'
+          POSTER_CACHE_INCLUDE_ALL_REMOTE: '1'
+          POSTER_CACHE_CONCURRENCY: '6'
+          # The Interpark detail API returned nothing for GitHub-hosted runners
+          # (0/268 on 2026-10-08), so its coverage is a warning in CI only.
+          DETAIL_COMPLETENESS_WARN_SOURCES: interpark
+        run: |
+          # Every step below must succeed. A failure now fails the job (red run +
+          # GitHub notification + tracking issue) instead of being swallowed with
+          # `exit 0`, which hid a frozen live site from 2026-09-09 to 2026-10-08.
+          set -euo pipefail
+
+          run_step() {
+            local step_name="$1"
+            shift
+            echo "::group::${step_name}"
+            if ! "$@"; then
+              echo "::endgroup::"
+              echo "::error title=Daily data update::${step_name} failed"
+              echo "${step_name}" > "$RUNNER_TEMP/failed-step.txt"
+              return 1
+            fi
+            echo "::endgroup::"
+          }
+
+          run_step "Validate Data Integrity" npx tsx scripts/validate-data-integrity.ts
+          run_step "Prune Stale Data" bash -c "npx tsx scripts/prune-expired-data.ts && npx tsx scripts/prune-data.ts"
+          run_step "Generate Public Data Artifacts" npm run generate-data
+          run_step "Stabilize Poster Image Cache" bash -c "npm run cache:posters && npm run validate:posters && npm run generate:thumbs"
+          run_step "Validate Content Quality" npm run validate:content
+          run_step "Validate Detail Completeness" npm run validate:details
+          run_step "Validate Search Consistency" npm run validate:search
+          run_step "Validate Location Search Contract" npm run validate:location-search
+          run_step "Validate Location Integrity" npm run validate:locations
+          run_step "Validate Display Integrity" npm run validate:display
+
+          echo "::group::Commit and Push changes"
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'actions@github.com'
+          git add src/data public/data public/version.txt public/images/posters public/images/thumbs
+
+          if git diff --staged --quiet; then
+            echo "data_changed=false" >> "$GITHUB_OUTPUT"
+            echo "deployed_sha=" >> "$GITHUB_OUTPUT"
+            echo "No data changes to commit."
+          else
+            git commit -m "chore: fallback daily data update"
+            git push || {
+              git pull --rebase --autostash origin main
+              git push
+            }
+            echo "data_changed=true" >> "$GITHUB_OUTPUT"
+            echo "deployed_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+          echo "::endgroup::"
+
+      - name: Report failure to tracking issue
+        if: failure() && steps.freshness.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          failed_step="$(cat "$RUNNER_TEMP/failed-step.txt" 2>/dev/null || echo 'unknown step (see run log)')"
+          {
+            echo "### $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo ""
+            echo "- Run: ${RUN_URL}"
+            echo "- Failed step: **${failed_step}**"
+            echo "- Live data stays on the last successful data commit."
+            if [ -s scrape_failures.txt ]; then
+              echo ""
+              echo "Scraper warnings:"
+              sed 's/^/- /' scrape_failures.txt
+            fi
+          } > "$RUNNER_TEMP/issue-body.md"
+          title="Daily data update is failing"
+          gh label create pipeline-failure --color B60205 --description 'Automated daily data pipeline failure' 2>/dev/null || true
+          existing="$(gh issue list --label pipeline-failure --state open --json number --jq '.[0].number' || true)"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file "$RUNNER_TEMP/issue-body.md"
+          else
+            gh issue create --title "$title" --label pipeline-failure --body-file "$RUNNER_TEMP/issue-body.md"
+          fi
+
+      - name: Close tracking issue after recovery
+        if: success() && steps.freshness.outputs.should_run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          for number in $(gh issue list --label pipeline-failure --state open --json number --jq '.[].number' 2>/dev/null || true); do
+            gh issue close "$number" --comment "Recovered in $RUN_URL"
+          done
+
+  # Commits pushed with GITHUB_TOKEN do not trigger deploy.yml's push trigger,
+  # so fallback data commits never reached GitHub Pages on their own.
+  deploy:
+    needs: update-data
+    if: needs.update-data.outputs.data_changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml
+    with:
+      checkout-sha: ${{ needs.update-data.outputs.deployed_sha }}
+      prebuilt-data: true
+    secrets:
+      NEXT_PUBLIC_KAKAO_JS_KEY: ${{ secrets.NEXT_PUBLIC_KAKAO_JS_KEY }}
