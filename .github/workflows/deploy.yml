@@ -35,6 +35,8 @@ jobs:
     timeout-minutes: 25
     permissions:
       contents: read
+      pages: write
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -44,6 +46,8 @@ jobs:
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
+        with:
+          enablement: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
