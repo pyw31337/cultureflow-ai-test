@@ -72,6 +72,18 @@ for (const file of TARGET_FILES) {
   if (changed && !dryRun) writeJson(file, rows);
 }
 
+const sourceHealth = SOURCE_FILES.map((file) => {
+  const rows = rowsByFile.get(file);
+  const dated = rows.map((row) => String(row.date || row.startDate || '')).filter(Boolean).sort();
+  const imageFields = rows.filter((row) => !emptyValue(row.image || row.poster || row.thumbnail || row.backupPoster)).length;
+  return {
+    source: file.replace(/\.json$/, ''),
+    records: rows.length,
+    latestDate: dated.at(-1) || null,
+    imageCoverage: rows.length ? Number((imageFields / rows.length).toFixed(4)) : 0,
+  };
+});
+
 const failurePath = path.join(ROOT, 'scrape_failures.txt');
 const failures = fs.existsSync(failurePath)
   ? fs.readFileSync(failurePath, 'utf8').split(/\r?\n/).map((source) => source.trim()).filter(Boolean).map((source) => ({
@@ -86,6 +98,7 @@ const report = {
   runId: process.env.GITHUB_RUN_ID || null,
   commit: process.env.GITHUB_SHA || null,
   failures,
+  sourceHealth,
   repairs: {
     attempted: true,
     changedRecords: new Set(repairs.map((repair) => repair.id)).size,
