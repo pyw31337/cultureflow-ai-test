@@ -1,13 +1,13 @@
 {
-  "checkedAt": "2026-11-24T04:23:18.990Z",
+  "checkedAt": "2026-11-25T02:31:59.877Z",
   "status": "warn",
-  "venueCount": 3138,
-  "matchedCount": 579,
+  "venueCount": 3135,
+  "matchedCount": 578,
   "highConfidenceMatchCount": 416,
   "needsReviewCount": 20,
-  "notFoundCount": 221,
-  "pendingLookupCount": 1812,
-  "insufficientIdentityCount": 165,
+  "notFoundCount": 218,
+  "pendingLookupCount": 1813,
+  "insufficientIdentityCount": 169,
   "lookupReady": false,
   "providersConfigured": [],
   "queue": [
@@ -19,14 +19,13 @@
       "priority": 940,
       "performanceCount": 5,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "노원 점프 테마파크_키즈카페 체험권",
         "노원 점프 테마파크_액티비티 체험권",
+        "노원 점프 테마파크_키즈카페 체험권",
         "노원 점프 배틀 드리프트 카트 이용권"
       ]
     },
@@ -38,14 +37,13 @@
       "priority": 924,
       "performanceCount": 3,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "APEC기념공원 루미나이트 이용권(구. 경주엑스포대공원)",
         "APEC기념공원 입장권(구. 경주엑스포대공원)",
+        "APEC기념공원 루미나이트 이용권(구. 경주엑스포대공원)",
         "APEC 기념공원+코스믹리조트 입장권 패키지"
       ]
     },
@@ -57,7 +55,6 @@
       "priority": 924,
       "performanceCount": 3,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -69,6 +66,24 @@
       ]
     },
     {
+      "venueId": "venue_스카이라인루지_8iyev1",
+      "officialName": "스카이라인 루지",
+      "address": "스카이라인 루지",
+      "query": "스카이라인 루지 스카이라인 루지",
+      "priority": 924,
+      "performanceCount": 3,
+      "reviewFlags": [
+        "invalid_coordinate",
+        "missing_detailed_address",
+        "needs_official_place_lookup"
+      ],
+      "sampleTitles": [
+        "루지3회(리프트)+더카트 1회(5바퀴)",
+        "[통영] 스카이라인 루지 이용권",
+        "통영루지(+리프트) 3회권+케이블카 빅2 이용권"
+      ]
+    },
+    {
       "venueId": "venue_아늑시그니처_1n9jn5y",
       "officialName": "아늑 시그니처",
       "address": "아늑 시그니처",
@@ -76,7 +91,6 @@
       "priority": 924,
       "performanceCount": 3,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -95,15 +109,31 @@
       "priority": 924,
       "performanceCount": 3,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
         "원더스페이스 청주점 이용권",
-        "원더스페이스 양산점 이용권",
-        "원더스페이스 부산명지점 이용권"
+        "원더스페이스 부산명지점 이용권",
+        "원더스페이스 양산점 이용권"
+      ]
+    },
+    {
+      "venueId": "venue_꽃지카트장_1gf4kr1",
+      "officialName": "꽃지카트장",
+      "address": "꽃지카트장",
+      "query": "꽃지카트장 꽃지카트장",
+      "priority": 916,
+      "performanceCount": 2,
+      "reviewFlags": [
+        "invalid_coordinate",
+        "missing_detailed_address",
+        "needs_official_place_lookup"
+      ],
+      "sampleTitles": [
+        "꽃지카트장 ATV·카트·서바이벌 2종 PKG",
+        "꽃지카트장 ATV·카트·서바이벌 단품"
       ]
     },
     {
@@ -120,8 +150,8 @@
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "63 스카이피크닉 입장권",
-        "스카이라인 루지 연간회원권"
+        "스카이라인 루지 연간회원권",
+        "63 스카이피크닉 입장권"
       ]
     },
     {
@@ -132,14 +162,13 @@
       "priority": 916,
       "performanceCount": 2,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "아이랑 가볼만한곳!! 쥬니멀동물원",
-        "쥬니멀 실내동물원 할인이용권"
+        "쥬니멀 실내동물원 할인이용권",
+        "아이랑 가볼만한곳!! 쥬니멀동물원"
       ]
     },
     {
@@ -166,7 +195,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -200,13 +228,28 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
         "강남 24시 사우나&amp;수영장 이용권(바로사용가능)"
+      ]
+    },
+    {
+      "venueId": "venue_강화레포츠파크_8r2bco",
+      "officialName": "강화레포츠파크",
+      "address": "강화레포츠파크",
+      "query": "강화레포츠파크 강화레포츠파크",
+      "priority": 908,
+      "performanceCount": 1,
+      "reviewFlags": [
+        "invalid_coordinate",
+        "missing_detailed_address",
+        "needs_official_place_lookup"
+      ],
+      "sampleTitles": [
+        "레포츠파크"
       ]
     },
     {
@@ -234,7 +277,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -251,7 +293,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -268,7 +309,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -319,7 +359,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -336,7 +375,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -353,7 +391,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -370,7 +407,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -436,7 +472,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -487,7 +522,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -504,7 +538,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -521,7 +554,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -554,7 +586,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -588,7 +619,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -605,7 +635,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -638,7 +667,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -655,7 +683,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -672,7 +699,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -699,6 +725,22 @@
       ]
     },
     {
+      "venueId": "venue_아트팩토리참기름_asq4ug",
+      "officialName": "아트팩토리 참기름",
+      "address": "아트팩토리 참기름",
+      "query": "아트팩토리 참기름 아트팩토리 참기름",
+      "priority": 908,
+      "performanceCount": 1,
+      "reviewFlags": [
+        "invalid_coordinate",
+        "missing_detailed_address",
+        "needs_official_place_lookup"
+      ],
+      "sampleTitles": [
+        "아트팩토리참기름 강화 [전시] 전등록(傳燈錄) : 천년의 빛"
+      ]
+    },
+    {
       "venueId": "venue_애니멀스타_1hmvqeb",
       "officialName": "애니멀스타",
       "address": "애니멀스타",
@@ -706,7 +748,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -723,7 +764,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -740,7 +780,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -757,7 +796,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -791,7 +829,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -808,7 +845,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -842,7 +878,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -891,7 +926,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -908,7 +942,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -941,7 +974,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -958,7 +990,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -975,7 +1006,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -1008,7 +1038,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -1025,7 +1054,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -1074,7 +1102,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -1108,7 +1135,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -1125,7 +1151,6 @@
       "priority": 908,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup"
@@ -1163,9 +1188,9 @@
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "부산/전포사잇길/ 비건쌀식빵 4종 ~비건도 이렇게 맛있을수가!!",
-        "수제 카네이션 떡케이크 만들기 원데이 이색 선물",
-        "부산 명품 거피팥고물과 견과류가득 쌀월병 만들기"
+        "부산 쌀코코넛칩쿠키 2종-80개",
+        "부산 산타딸기 케이크 만들기/ 쌀케이크 만들기 이색 클래스",
+        "부산 바삭바삭 누룽지빵 클래스 -완전jmt 추천"
       ]
     },
     {
@@ -1182,8 +1207,8 @@
       ],
       "sampleTitles": [
         "뚱카롱 만들기 원데이 클래스",
-        "구움찰떡 6종 만들기 원데이 클래스",
-        "원데이 쌀 에그타르트"
+        "로투스브라우니 치즈케이크 만들기 베이킹 원데이 클래스",
+        "쌀스콘 2종 만들기 원데이 클래스"
       ]
     },
     {
@@ -1199,9 +1224,9 @@
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "우유크림 카스테라 만들기 원데이 클래스",
         "쌀바통 빼빼로 만들기 원데이 클래스",
-        "스모어 쿠키 2종 만들기 원데이 클래스"
+        "불고기베이크 만들기 원데이 클래스",
+        "바도 매직 초코바 만들기 원데이 클래스"
       ]
     },
     {
@@ -1234,8 +1259,8 @@
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "부산성인피아노1:1레슨/주례피아노/사상피아노",
-        "부산성인피아노/부산피아노/사상피아노/주례피아노/사상음악학원/주례음악학원 [1개월]"
+        "부산성인피아노/부산피아노/사상피아노/주례피아노/사상음악학원/주례음악학원 [1개월]",
+        "부산성인피아노1:1레슨/주례피아노/사상피아노"
       ]
     },
     {
@@ -1250,8 +1275,8 @@
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "소노벨 델피노 오션플레이 로우시즌 패밀리권 (10/12~12/04)",
-        "소노벨 델피노 오션플레이 로우시즌 종일권 (10/12~12/04)"
+        "소노벨 델피노 오션플레이 로우시즌 종일권 (10/12~12/04)",
+        "소노벨 델피노 오션플레이 로우시즌 패밀리권 (10/12~12/04)"
       ]
     },
     {
@@ -1299,8 +1324,8 @@
         "needs_official_place_lookup"
       ],
       "sampleTitles": [
-        "SUPER Concert X: 다시 쓰는 추억 [청주]",
-        "슈퍼콘서트X: 다시 쓰는 추억 [청주]"
+        "슈퍼콘서트X: 다시 쓰는 추억 [청주]",
+        "SUPER Concert X: 다시 쓰는 추억 [청주]"
       ]
     },
     {
@@ -1528,7 +1553,6 @@
       "priority": 588,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "needs_official_place_lookup"
       ],
@@ -1669,7 +1693,6 @@
       "priority": 588,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "needs_official_place_lookup"
       ],
@@ -1700,7 +1723,6 @@
       "priority": 588,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "needs_official_place_lookup"
       ],
@@ -1918,66 +1940,6 @@
       "sampleTitles": [
         "첼로 개인레슨 초보반 [1개월]"
       ]
-    },
-    {
-      "venueId": "venue_부산동래구충렬대로91골목입구4층나봄컬러_9qvqzs",
-      "officialName": "부산 동래구 충렬대로 91 골목입구 4층, 나봄컬러",
-      "address": "부산 동래구 충렬대로 91 (온천동) 골목입구 4층, 나봄컬러",
-      "query": "골목입구 4층, 나봄컬러 부산 동래구",
-      "priority": 588,
-      "performanceCount": 1,
-      "reviewFlags": [
-        "invalid_coordinate",
-        "needs_official_place_lookup"
-      ],
-      "sampleTitles": [
-        "나를 돌아보는 컬러테라피+원석악세사리 이색 클래스"
-      ]
-    },
-    {
-      "venueId": "venue_부산부산진구동평로353카페스토리쿡_l77ns9",
-      "officialName": "부산 부산진구 동평로 353 카페 스토리쿡",
-      "address": "부산진구 동평로 353 (양정동) 카페 스토리쿡",
-      "query": "카페 스토리쿡 부산진구 동평로",
-      "priority": 588,
-      "performanceCount": 1,
-      "reviewFlags": [
-        "invalid_coordinate",
-        "needs_official_place_lookup"
-      ],
-      "sampleTitles": [
-        "담백한 쌀빵 (단호박,흑임자등) 파운드케익 3가지 만들기"
-      ]
-    },
-    {
-      "venueId": "venue_부산부산진구신천대로108지하1층_wgp2zn",
-      "officialName": "부산 부산진구 신천대로 108 지하1층",
-      "address": "부산진구 신천대로 108 (부전동, 인제빌딩) 지하1층",
-      "query": "지하1층 부산진구 신천대로",
-      "priority": 588,
-      "performanceCount": 1,
-      "reviewFlags": [
-        "invalid_coordinate",
-        "needs_official_place_lookup"
-      ],
-      "sampleTitles": [
-        "라틴댄스 바차타 신규체험 만원이벤트 [1일]"
-      ]
-    },
-    {
-      "venueId": "venue_부산부산진구양지로54스포츠센터풀장_1hn9q3n",
-      "officialName": "부산 부산진구 양지로 54 스포츠센터 풀장",
-      "address": "부산진구 양지로 54 (양정동, 동의과학대학) 스포츠센터 풀장",
-      "query": "스포츠센터 풀장 부산진구 양지로",
-      "priority": 588,
-      "performanceCount": 1,
-      "reviewFlags": [
-        "invalid_coordinate",
-        "needs_official_place_lookup"
-      ],
-      "sampleTitles": [
-        "인생취미 프리다이빙 원데이체험"
-      ]
     }
   ],
   "insufficientIdentityQueue": [
@@ -1996,8 +1958,8 @@
       ],
       "sampleTitles": [
         "Bright Dreamer 서울 근교 문화 현장체험 · 기행문 수업(코스4)",
-        "렛츠고 역사탐험대, 월 1~2회 박물관 답사 소셜클럽",
-        "화성박물관&화성행궁 어린이 역사투어"
+        "달마다 새롭게 10회 과정! 한국사 역사체험 탐험대",
+        "숲파티포레의 프라이빗 박물관 숲체험"
       ]
     },
     {
@@ -2015,8 +1977,8 @@
       ],
       "sampleTitles": [
         "딱딱한쿠키는가라! 촉촉한브라우니쿠키 원데이클래스 오픈!",
-        "명절 펫푸드 원데이클래스",
-        "강아지 수제간식 원데이 클래스"
+        "행궁동 버니브릭 페인팅🐰 기업/단체/출강 문의 환영🙆🏻‍♂🙆",
+        "예쁨 한스푼, 크림솝 만들기(약산성비누)"
       ]
     },
     {
@@ -2033,9 +1995,9 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "수제꽃차원데이클래스",
+        "인삼꽃주원데이클래스",
         "K-아트,민화 정규반/지도자자격증반",
-        "나의 매력을 발견하는 퍼스널컬러 클래스"
+        "보자기아트 자격증취득반/ 정규반클래스"
       ]
     },
     {
@@ -2052,9 +2014,9 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "감각적인 니치향수 제작, 뤼미에르 퍼퓸 B Class",
-        "향기를 굽는 시간 로스팅 체험 클래스",
-        "초보도 완전 쉽게! 미리캔버스 디자인"
+        "감각적인 시그니처 향수 제작, 뤼미에르 퍼퓸 A Class",
+        "커피 드립백 클래스",
+        "크리스마스이미지 와인잔에 프린팅하기(실크스크린기법)"
       ]
     },
     {
@@ -2071,9 +2033,9 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "키링만들기",
         "나만의 작은우주 테라리움 원데이클래스",
-        "200여가지 향수 셀프체험 클래스"
+        "키링만들기",
+        "무드등만들기"
       ]
     },
     {
@@ -2088,9 +2050,9 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "순은 99.9% 은점토로 나만의 반지/목걸이 만들기",
-        "원데이 키즈 클래스/키즈 팔찌 만들기",
-        "원데이 반려동물 목걸이 펫 클래스"
+        "우리만의 팔찌 만들기 (원데이 커플/우정 클래스)",
+        "원데이 반려동물 목걸이 펫 클래스",
+        "원 앤 온리 특별한 목걸이 만들기"
       ]
     },
     {
@@ -2107,8 +2069,8 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "강아지 노오븐 수제간식 취미반",
         "피크닉 준비 강아지 파스타 (바질파스타, 로제파스타)",
+        "강아지 노오븐 수제간식 취미반",
         "시한드로잉모임"
       ]
     },
@@ -2120,15 +2082,14 @@
       "priority": 40,
       "performanceCount": 5,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "노원 점프 테마파크_키즈카페 체험권",
         "노원 점프 테마파크_액티비티 체험권",
+        "노원 점프 테마파크_키즈카페 체험권",
         "노원 점프 배틀 드리프트 카트 이용권"
       ]
     },
@@ -2146,9 +2107,9 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "미니테라리움클래스",
-        "<여행의 기억, 선물이 되는 시간> 작은선물만들기 원데이클래스 _재봉틀",
-        "나만의 특별한 향 만들기, 스튜디오 유랑 향수 원데이 클래스"
+        "마크라메 파인애플 화분 만들기",
+        "라탄 원데이클래스",
+        "미니테라리움클래스"
       ]
     },
     {
@@ -2164,8 +2125,8 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "악마의에그타르트 원데이클래스(겉빠속촉)",
         "촉촉한 건강식 수제오란다 원데이클래스",
+        "앙금플라워케이크정규반모집 [1개월]",
         "바삭쫀득꼬끄 + 부드러운 크림 마카롱원데이클래스"
       ]
     },
@@ -2183,9 +2144,9 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "전주 힙팟클래스",
         "오가닉으로 건강한 샴푸바 올인원바 만들기",
-        "향기테라피 커스텀 키링 만들기"
+        "시그니처 오가닉 천연향수 원데이클래스",
+        "전주 힙팟클래스"
       ]
     },
     {
@@ -2196,15 +2157,14 @@
       "priority": 24,
       "performanceCount": 3,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "APEC기념공원 루미나이트 이용권(구. 경주엑스포대공원)",
         "APEC기념공원 입장권(구. 경주엑스포대공원)",
+        "APEC기념공원 루미나이트 이용권(구. 경주엑스포대공원)",
         "APEC 기념공원+코스믹리조트 입장권 패키지"
       ]
     },
@@ -2216,7 +2176,6 @@
       "priority": 24,
       "performanceCount": 3,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -2261,8 +2220,8 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "당일수령가능한 그림컵만들기 !",
         "도자기원데이클래스",
+        "당일수령가능한 그림컵만들기 !",
         "유리컵 전사 체험"
       ]
     },
@@ -2279,8 +2238,8 @@
       ],
       "sampleTitles": [
         "나만의 오브제 그릇 만들기 (핸드빌딩) 이색 체험",
-        "나만의 캐릭터 그릇 만들기 (핸드빌딩) 이색 체험",
-        "나만의 오브제 그릇 만들기 (물레) 이색 체험 데이트"
+        "나만의 오브제 그릇 만들기 (물레) 이색 체험 데이트",
+        "나만의 캐릭터 그릇 만들기 (핸드빌딩) 이색 체험"
       ]
     },
     {
@@ -2295,9 +2254,28 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "비누에 봄을 담아요, 플라워솝 압화비누 만들기",
+        "내 몸에도 건강하고, 환경에도 이로운 제로웨이스트 올인원 샴푸바 만들기",
         "내 취향에 딱 맞는 향기로 만드는 천연 핸드크림 원데이클래스",
-        "내 몸에도 건강하고, 환경에도 이로운 제로웨이스트 올인원 샴푸바 만들기"
+        "비누에 봄을 담아요, 플라워솝 압화비누 만들기"
+      ]
+    },
+    {
+      "venueId": "venue_스카이라인루지_8iyev1",
+      "officialName": "스카이라인 루지",
+      "address": "스카이라인 루지",
+      "query": "스카이라인 루지 스카이라인 루지",
+      "priority": 24,
+      "performanceCount": 3,
+      "reviewFlags": [
+        "invalid_coordinate",
+        "missing_detailed_address",
+        "needs_official_place_lookup",
+        "insufficient_place_identity"
+      ],
+      "sampleTitles": [
+        "루지3회(리프트)+더카트 1회(5바퀴)",
+        "[통영] 스카이라인 루지 이용권",
+        "통영루지(+리프트) 3회권+케이블카 빅2 이용권"
       ]
     },
     {
@@ -2308,7 +2286,6 @@
       "priority": 24,
       "performanceCount": 3,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -2328,7 +2305,6 @@
       "priority": 24,
       "performanceCount": 3,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -2336,8 +2312,8 @@
       ],
       "sampleTitles": [
         "원더스페이스 청주점 이용권",
-        "원더스페이스 양산점 이용권",
-        "원더스페이스 부산명지점 이용권"
+        "원더스페이스 부산명지점 이용권",
+        "원더스페이스 양산점 이용권"
       ]
     },
     {
@@ -2356,6 +2332,24 @@
       "sampleTitles": [
         "소망컬러 소잉클래스(단체클래스)",
         "소망컬러 소잉클래스"
+      ]
+    },
+    {
+      "venueId": "venue_꽃지카트장_1gf4kr1",
+      "officialName": "꽃지카트장",
+      "address": "꽃지카트장",
+      "query": "꽃지카트장 꽃지카트장",
+      "priority": 16,
+      "performanceCount": 2,
+      "reviewFlags": [
+        "invalid_coordinate",
+        "missing_detailed_address",
+        "needs_official_place_lookup",
+        "insufficient_place_identity"
+      ],
+      "sampleTitles": [
+        "꽃지카트장 ATV·카트·서바이벌 2종 PKG",
+        "꽃지카트장 ATV·카트·서바이벌 단품"
       ]
     },
     {
@@ -2420,8 +2414,8 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "커플성격분석 에니어그램",
-        "내 마음을 알고 싶어요(MMPI-2)"
+        "내 마음을 알고 싶어요(MMPI-2)",
+        "커플성격분석 에니어그램"
       ]
     },
     {
@@ -2452,8 +2446,8 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "소마틱 필라테스 Somatics 1:1 체험수업",
-        "소마틱 필라테스 Somatics 1:1 월8회권"
+        "소마틱 필라테스 Somatics 1:1 월8회권",
+        "소마틱 필라테스 Somatics 1:1 체험수업"
       ]
     },
     {
@@ -2485,8 +2479,8 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "2027 미리 준비하는 양의 해, 재물과 복 글라스아트 양 도어벨 만들기",
-        "DIY, 내 손으로 만드는 나만의 월급 포트폴리오_재테크 원데이클래스"
+        "DIY, 내 손으로 만드는 나만의 월급 포트폴리오_재테크 원데이클래스",
+        "2027 미리 준비하는 양의 해, 재물과 복 글라스아트 양 도어벨 만들기"
       ]
     },
     {
@@ -2504,8 +2498,8 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "63 스카이피크닉 입장권",
-        "스카이라인 루지 연간회원권"
+        "스카이라인 루지 연간회원권",
+        "63 스카이피크닉 입장권"
       ]
     },
     {
@@ -2516,15 +2510,14 @@
       "priority": 16,
       "performanceCount": 2,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "아이랑 가볼만한곳!! 쥬니멀동물원",
-        "쥬니멀 실내동물원 할인이용권"
+        "쥬니멀 실내동물원 할인이용권",
+        "아이랑 가볼만한곳!! 쥬니멀동물원"
       ]
     },
     {
@@ -2598,7 +2591,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -2634,7 +2626,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -2642,6 +2633,23 @@
       ],
       "sampleTitles": [
         "강남 24시 사우나&amp;수영장 이용권(바로사용가능)"
+      ]
+    },
+    {
+      "venueId": "venue_강화레포츠파크_8r2bco",
+      "officialName": "강화레포츠파크",
+      "address": "강화레포츠파크",
+      "query": "강화레포츠파크 강화레포츠파크",
+      "priority": 8,
+      "performanceCount": 1,
+      "reviewFlags": [
+        "invalid_coordinate",
+        "missing_detailed_address",
+        "needs_official_place_lookup",
+        "insufficient_place_identity"
+      ],
+      "sampleTitles": [
+        "레포츠파크"
       ]
     },
     {
@@ -2675,9 +2683,9 @@
       ]
     },
     {
-      "venueId": "venue_경기군포시_1ced3je",
+      "venueId": "venue_경기군포시_wkx1j9",
       "officialName": "경기 군포시",
-      "address": "경기 군포시 산본로323번길",
+      "address": "경기 군포시 군포로735번길",
       "query": "경기 군포시 경기 군포시",
       "priority": 8,
       "performanceCount": 1,
@@ -2686,7 +2694,7 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "제스모나이트+캔들/레진아트 2가지를 한번에 배울수 있다?"
+        "마크라메 카네이션 월행잉 클래스"
       ]
     },
     {
@@ -2705,9 +2713,9 @@
       ]
     },
     {
-      "venueId": "venue_경기군포시_wkx1j9",
+      "venueId": "venue_경기군포시_1ced3je",
       "officialName": "경기 군포시",
-      "address": "경기 군포시 군포로735번길",
+      "address": "경기 군포시 산본로323번길",
       "query": "경기 군포시 경기 군포시",
       "priority": 8,
       "performanceCount": 1,
@@ -2716,7 +2724,7 @@
         "insufficient_place_identity"
       ],
       "sampleTitles": [
-        "마크라메 카네이션 월행잉 클래스"
+        "제스모나이트+캔들/레진아트 2가지를 한번에 배울수 있다?"
       ]
     },
     {
@@ -2975,7 +2983,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -2993,7 +3000,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3011,7 +3017,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3095,7 +3100,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3113,7 +3117,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3131,7 +3134,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3149,7 +3151,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3219,7 +3220,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3291,7 +3291,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3339,7 +3338,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3357,7 +3355,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3438,7 +3435,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3474,7 +3470,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3492,7 +3487,6 @@
       "priority": 8,
       "performanceCount": 1,
       "reviewFlags": [
-        "alias_merge_candidate",
         "invalid_coordinate",
         "missing_detailed_address",
         "needs_official_place_lookup",
@@ -3928,52 +3922,6 @@
       "sampleTitles": [
         "［성북］ 빚다 도예공방 도자기만들기/물레체험/핸드빌딩/핸드페인팅(전화예약 필수)"
       ]
-    },
-    {
-      "venueId": "venue_서울송파구_4oweib",
-      "officialName": "서울 송파구",
-      "address": "서울특별시 송파구 올림픽로 300 롯데월드타워앤드롯데월드몰 7층 롯데뮤지엄",
-      "query": "서울 송파구 서울 송파구",
-      "priority": 8,
-      "performanceCount": 1,
-      "reviewFlags": [
-        "needs_official_place_lookup",
-        "insufficient_place_identity"
-      ],
-      "sampleTitles": [
-        "<전시> VERDY : I Believe in Me(~ 26/07/19)"
-      ]
-    },
-    {
-      "venueId": "venue_서울송파구_lgeq5h",
-      "officialName": "서울 송파구",
-      "address": "서울특별시 송파구 올림픽로 300 롯데월드타워앤드롯데월드몰 롯데월드 아쿠아리움",
-      "query": "서울 송파구 서울 송파구",
-      "priority": 8,
-      "performanceCount": 1,
-      "reviewFlags": [
-        "needs_official_place_lookup",
-        "insufficient_place_identity"
-      ],
-      "sampleTitles": [
-        "<팝업> 쿠키런 in 롯데월드 아쿠아리움: 바다모험전(~ 26/06/07)"
-      ]
-    },
-    {
-      "venueId": "venue_서울송파구_1v7gfox",
-      "officialName": "서울 송파구",
-      "address": "서울특별시 송파구 올림픽로 240, 키자니아",
-      "query": "서울 송파구 서울 송파구",
-      "priority": 8,
-      "performanceCount": 1,
-      "reviewFlags": [
-        "invalid_coordinate",
-        "needs_official_place_lookup",
-        "insufficient_place_identity"
-      ],
-      "sampleTitles": [
-        "키자니아(서울/부산)"
-      ]
     }
   ],
   "staleCacheCount": 0,
@@ -4319,15 +4267,15 @@
     }
   ],
   "summary": {
-    "checkedAt": "2026-11-24T04:23:18.990Z",
+    "checkedAt": "2026-11-25T02:31:59.877Z",
     "status": "warn",
-    "venueCount": 3138,
-    "matchedCount": 579,
+    "venueCount": 3135,
+    "matchedCount": 578,
     "highConfidenceMatchCount": 416,
     "needsReviewCount": 20,
-    "notFoundCount": 221,
-    "pendingLookupCount": 1812,
-    "insufficientIdentityCount": 165,
+    "notFoundCount": 218,
+    "pendingLookupCount": 1813,
+    "insufficientIdentityCount": 169,
     "lookupReady": false,
     "providersConfigured": [],
     "staleCacheCount": 0,
@@ -4340,14 +4288,13 @@
         "priority": 940,
         "performanceCount": 5,
         "reviewFlags": [
-          "alias_merge_candidate",
           "invalid_coordinate",
           "missing_detailed_address",
           "needs_official_place_lookup"
         ],
         "sampleTitles": [
-          "노원 점프 테마파크_키즈카페 체험권",
           "노원 점프 테마파크_액티비티 체험권",
+          "노원 점프 테마파크_키즈카페 체험권",
           "노원 점프 배틀 드리프트 카트 이용권"
         ]
       },
@@ -4359,14 +4306,13 @@
         "priority": 924,
         "performanceCount": 3,
         "reviewFlags": [
-          "alias_merge_candidate",
           "invalid_coordinate",
           "missing_detailed_address",
           "needs_official_place_lookup"
         ],
         "sampleTitles": [
-          "APEC기념공원 루미나이트 이용권(구. 경주엑스포대공원)",
           "APEC기념공원 입장권(구. 경주엑스포대공원)",
+          "APEC기념공원 루미나이트 이용권(구. 경주엑스포대공원)",
           "APEC 기념공원+코스믹리조트 입장권 패키지"
         ]
       },
@@ -4378,7 +4324,6 @@
         "priority": 924,
         "performanceCount": 3,
         "reviewFlags": [
-          "alias_merge_candidate",
           "invalid_coordinate",
           "missing_detailed_address",
           "needs_official_place_lookup"
@@ -4390,6 +4335,24 @@
         ]
       },
       {
+        "venueId": "venue_스카이라인루지_8iyev1",
+        "officialName": "스카이라인 루지",
+        "address": "스카이라인 루지",
+        "query": "스카이라인 루지 스카이라인 루지",
+        "priority": 924,
+        "performanceCount": 3,
+        "reviewFlags": [
+          "invalid_coordinate",
+          "missing_detailed_address",
+          "needs_official_place_lookup"
+        ],
+        "sampleTitles": [
+          "루지3회(리프트)+더카트 1회(5바퀴)",
+          "[통영] 스카이라인 루지 이용권",
+          "통영루지(+리프트) 3회권+케이블카 빅2 이용권"
+        ]
+      },
+      {
         "venueId": "venue_아늑시그니처_1n9jn5y",
         "officialName": "아늑 시그니처",
         "address": "아늑 시그니처",
@@ -4397,7 +4360,6 @@
         "priority": 924,
         "performanceCount": 3,
         "reviewFlags": [
-          "alias_merge_candidate",
           "invalid_coordinate",
           "missing_detailed_address",
           "needs_official_place_lookup"
@@ -4416,15 +4378,31 @@
         "priority": 924,
         "performanceCount": 3,
         "reviewFlags": [
-          "alias_merge_candidate",
           "invalid_coordinate",
           "missing_detailed_address",
           "needs_official_place_lookup"
         ],
         "sampleTitles": [
           "원더스페이스 청주점 이용권",
-          "원더스페이스 양산점 이용권",
-          "원더스페이스 부산명지점 이용권"
+          "원더스페이스 부산명지점 이용권",
+          "원더스페이스 양산점 이용권"
+        ]
+      },
+      {
+        "venueId": "venue_꽃지카트장_1gf4kr1",
+        "officialName": "꽃지카트장",
+        "address": "꽃지카트장",
+        "query": "꽃지카트장 꽃지카트장",
+        "priority": 916,
+        "performanceCount": 2,
+        "reviewFlags": [
+          "invalid_coordinate",
+          "missing_detailed_address",
+          "needs_official_place_lookup"
+        ],
+        "sampleTitles": [
+          "꽃지카트장 ATV·카트·서바이벌 2종 PKG",
+          "꽃지카트장 ATV·카트·서바이벌 단품"
         ]
       },
       {
@@ -4441,8 +4419,8 @@
           "needs_official_place_lookup"
         ],
         "sampleTitles": [
-          "63 스카이피크닉 입장권",
-          "스카이라인 루지 연간회원권"
+          "스카이라인 루지 연간회원권",
+          "63 스카이피크닉 입장권"
         ]
       },
       {
@@ -4453,14 +4431,13 @@
         "priority": 916,
         "performanceCount": 2,
         "reviewFlags": [
-          "alias_merge_candidate",
           "invalid_coordinate",
           "missing_detailed_address",
           "needs_official_place_lookup"
         ],
         "sampleTitles": [
-          "아이랑 가볼만한곳!! 쥬니멀동물원",
-          "쥬니멀 실내동물원 할인이용권"
+          "쥬니멀 실내동물원 할인이용권",
+          "아이랑 가볼만한곳!! 쥬니멀동물원"
         ]
       },
       {
@@ -4477,40 +4454,6 @@
         ],
         "sampleTitles": [
           "쉽고 재미있는 위스키 원데이 클래스(수료증 발급)"
-        ]
-      },
-      {
-        "venueId": "venue_w사우나웨스턴리버101_cyc1p6",
-        "officialName": "W사우나 웨스턴리버101",
-        "address": "W사우나 웨스턴리버101",
-        "query": "W사우나 웨스턴리버101 w사우나 웨스턴리버101",
-        "priority": 908,
-        "performanceCount": 1,
-        "reviewFlags": [
-          "alias_merge_candidate",
-          "invalid_coordinate",
-          "missing_detailed_address",
-          "needs_official_place_lookup"
-        ],
-        "sampleTitles": [
-          "무안 W사우나 웨스턴리버101 이용권"
-        ]
-      },
-      {
-        "venueId": "venue_가톨릭관동대학교_1g2y1gg",
-        "officialName": "가톨릭관동대학교",
-        "address": "etc 가톨릭관동대학교",
-        "query": "가톨릭관동대학교 etc 가톨릭관동대학교",
-        "priority": 908,
-        "performanceCount": 1,
-        "reviewFlags": [
-          "alias_merge_candidate",
-          "invalid_coordinate",
-          "missing_detailed_address",
-          "needs_official_place_lookup"
-        ],
-        "sampleTitles": [
-          "무명전설 전국투어 콘서트 [강릉]"
         ]
       }
     ],
@@ -4530,8 +4473,8 @@
         ],
         "sampleTitles": [
           "Bright Dreamer 서울 근교 문화 현장체험 · 기행문 수업(코스4)",
-          "렛츠고 역사탐험대, 월 1~2회 박물관 답사 소셜클럽",
-          "화성박물관&화성행궁 어린이 역사투어"
+          "달마다 새롭게 10회 과정! 한국사 역사체험 탐험대",
+          "숲파티포레의 프라이빗 박물관 숲체험"
         ]
       },
       {
@@ -4549,8 +4492,8 @@
         ],
         "sampleTitles": [
           "딱딱한쿠키는가라! 촉촉한브라우니쿠키 원데이클래스 오픈!",
-          "명절 펫푸드 원데이클래스",
-          "강아지 수제간식 원데이 클래스"
+          "행궁동 버니브릭 페인팅🐰 기업/단체/출강 문의 환영🙆🏻‍♂🙆",
+          "예쁨 한스푼, 크림솝 만들기(약산성비누)"
         ]
       },
       {
@@ -4567,9 +4510,9 @@
           "insufficient_place_identity"
         ],
         "sampleTitles": [
-          "수제꽃차원데이클래스",
+          "인삼꽃주원데이클래스",
           "K-아트,민화 정규반/지도자자격증반",
-          "나의 매력을 발견하는 퍼스널컬러 클래스"
+          "보자기아트 자격증취득반/ 정규반클래스"
         ]
       },
       {
@@ -4586,9 +4529,9 @@
           "insufficient_place_identity"
         ],
         "sampleTitles": [
-          "감각적인 니치향수 제작, 뤼미에르 퍼퓸 B Class",
-          "향기를 굽는 시간 로스팅 체험 클래스",
-          "초보도 완전 쉽게! 미리캔버스 디자인"
+          "감각적인 시그니처 향수 제작, 뤼미에르 퍼퓸 A Class",
+          "커피 드립백 클래스",
+          "크리스마스이미지 와인잔에 프린팅하기(실크스크린기법)"
         ]
       },
       {
@@ -4605,9 +4548,9 @@
           "insufficient_place_identity"
         ],
         "sampleTitles": [
-          "키링만들기",
           "나만의 작은우주 테라리움 원데이클래스",
-          "200여가지 향수 셀프체험 클래스"
+          "키링만들기",
+          "무드등만들기"
         ]
       },
       {
@@ -4622,9 +4565,9 @@
           "insufficient_place_identity"
         ],
         "sampleTitles": [
-          "순은 99.9% 은점토로 나만의 반지/목걸이 만들기",
-          "원데이 키즈 클래스/키즈 팔찌 만들기",
-          "원데이 반려동물 목걸이 펫 클래스"
+          "우리만의 팔찌 만들기 (원데이 커플/우정 클래스)",
+          "원데이 반려동물 목걸이 펫 클래스",
+          "원 앤 온리 특별한 목걸이 만들기"
         ]
       },
       {
@@ -4641,8 +4584,8 @@
           "insufficient_place_identity"
         ],
         "sampleTitles": [
-          "강아지 노오븐 수제간식 취미반",
           "피크닉 준비 강아지 파스타 (바질파스타, 로제파스타)",
+          "강아지 노오븐 수제간식 취미반",
           "시한드로잉모임"
         ]
       },
@@ -4654,15 +4597,14 @@
         "priority": 40,
         "performanceCount": 5,
         "reviewFlags": [
-          "alias_merge_candidate",
           "invalid_coordinate",
           "missing_detailed_address",
           "needs_official_place_lookup",
           "insufficient_place_identity"
         ],
         "sampleTitles": [
-          "노원 점프 테마파크_키즈카페 체험권",
           "노원 점프 테마파크_액티비티 체험권",
+          "노원 점프 테마파크_키즈카페 체험권",
           "노원 점프 배틀 드리프트 카트 이용권"
         ]
       },
@@ -4680,9 +4622,9 @@
           "insufficient_place_identity"
         ],
         "sampleTitles": [
-          "미니테라리움클래스",
-          "<여행의 기억, 선물이 되는 시간> 작은선물만들기 원데이클래스 _재봉틀",
-          "나만의 특별한 향 만들기, 스튜디오 유랑 향수 원데이 클래스"
+          "마크라메 파인애플 화분 만들기",
+          "라탄 원데이클래스",
+          "미니테라리움클래스"
         ]
       },
       {
@@ -4698,8 +4640,8 @@
           "insufficient_place_identity"
         ],
         "sampleTitles": [
-          "악마의에그타르트 원데이클래스(겉빠속촉)",
           "촉촉한 건강식 수제오란다 원데이클래스",
+          "앙금플라워케이크정규반모집 [1개월]",
           "바삭쫀득꼬끄 + 부드러운 크림 마카롱원데이클래스"
         ]
       }

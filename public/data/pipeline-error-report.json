@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-24T04:23:13.762Z",
-  "runId": "45322683550",
-  "commit": "5afe22dc5ca836cd21bf159dd3774935a970a538",
+  "generatedAt": "2026-11-25T02:31:54.776Z",
+  "runId": "45530818472",
+  "commit": "3a7cfefd5af6b65aa6be5987ee7476dd9c737dbc",
   "failures": [
     {
       "source": "kopis",
@@ -34,7 +34,7 @@
       "blocking": false
     },
     {
-      "source": "culture-portal",
+      "source": "mommom",
       "kind": "scraper-failure",
       "action": "retain-last-good-data",
       "blocking": false
@@ -43,21 +43,21 @@
   "sourceHealth": [
     {
       "source": "kopis-performances",
-      "records": 3344,
+      "records": 3203,
       "latestDate": "2027.05.21 ~ 2027.05.30",
       "imageCoverage": 1
     },
     {
       "source": "interpark",
-      "records": 1351,
+      "records": 1285,
       "latestDate": "2027.05.21 ~ 2027.05.30",
       "imageCoverage": 1
     },
     {
       "source": "culture-portal",
-      "records": 7016,
+      "records": 7014,
       "latestDate": "99",
-      "imageCoverage": 0.0162
+      "imageCoverage": 0.016
     },
     {
       "source": "yes24",
