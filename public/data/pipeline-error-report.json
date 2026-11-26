@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-25T02:31:54.776Z",
-  "runId": "45530818472",
-  "commit": "3a7cfefd5af6b65aa6be5987ee7476dd9c737dbc",
+  "generatedAt": "2026-11-26T02:07:12.223Z",
+  "runId": "45737680302",
+  "commit": "4d65bc81ffb77d8cc494d39aa62d611c12c6fa64",
   "failures": [
     {
       "source": "kopis",
@@ -43,13 +43,13 @@
   "sourceHealth": [
     {
       "source": "kopis-performances",
-      "records": 3203,
+      "records": 3193,
       "latestDate": "2027.05.21 ~ 2027.05.30",
       "imageCoverage": 1
     },
     {
       "source": "interpark",
-      "records": 1285,
+      "records": 1283,
       "latestDate": "2027.05.21 ~ 2027.05.30",
       "imageCoverage": 1
     },
